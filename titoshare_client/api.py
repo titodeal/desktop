@@ -7,10 +7,10 @@ sys.path.append(external_path)
 from tito_sockets.socket_client import SocketClient
 
 
-class Api(SocketClient):
+class ApiShare(SocketClient):
 
     def __init__(self, host, port, timeout=None):
-        super(Api, self).__init__(host=host, port=port, timeout=timeout)
+        super(ApiShare, self).__init__(host=host, port=port, timeout=timeout)
         self.set_connection()
 
     def mount_fs(self, mnt_folder, user, passwd, ip, port):
