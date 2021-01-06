@@ -1,7 +1,8 @@
 #!/usr/bin/python
+from gui import main_window
 from titoshare_client.api import ApiShare
 from app.api_client import Api as ApiServer
-import sys
+import sys, os
 
 
 # with ApiShare(host='192.168.88.163', port=5055, timeout=None) as api_share:
@@ -21,13 +22,22 @@ import sys
 #         print("RETURNCODE IS: ", retruncode)
 #         print("DATA IS: ", data)
 
-api_server = ApiServer(host='192.168.88.163', port=9090, timeout=None)
-# api_server.set_connection()
-
+# api_server = ApiServer(host='192.168.88.163', port=9090, timeout=None)
+# # api_server.get_credentials('User_01', '234')
+# api_server.create_credentials('User_01', '234', "user_01@gmail.com")
+# api_server.create_credentials('User_02', '123', "user_02@gmail.com")
+# api_server.create_credentials('User_03', '123', "user_03@gmail.com")
 # returncode, data = api_server.del_user("User_01")
-returncode, data = api_server.add_user("User_001", "123", "trata@gamil_01")
-print("RETRUN CODE IS: ", returncode)
-print("DATA IS: ", data)
+# returncode, data = api_server.add_user("User_001", "123", "trata@gamil_01")
+# print("RETRUN CODE IS: ", returncode)
+# print("DATA IS: ", data)
 
-api_server.close_connection()
+# api_server.close_connection()
+# 
+# api_server.set_connection()
+# api_server.get_credentials('User_01', '123')
+# api_server.close_connection()
 
+# os.system("python3 ./gui/main_window.py")
+# if __name__ == "__main__":
+main_window.start_main_window()

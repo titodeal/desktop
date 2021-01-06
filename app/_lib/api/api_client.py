@@ -13,11 +13,24 @@ class Api(SocketClient):
         super(Api, self).__init__(host=host, port=port, timeout=timeout)
         self.set_connection()
 
-    def add_user(self, username, passwd, email):
-        method_name = "add_user"
+    def create_credentials(self, username, passwd, email):
+        method_name = "create_credentials"
         args = [f"{username}", f"{passwd}", f"{email}"]
         response = self.send_request(method_name, args)
         return response
+
+    def get_credentials(self, username, passwd):
+        method_name = "get_credentials"
+        args = [f"{username}", f"{passwd}"]
+        response = self.send_request(method_name, args)
+        return response
+
+
+#     def add_user(self, username, passwd, email):
+#         method_name = "add_user"
+#         args = [f"{username}", f"{passwd}", f"{email}"]
+#         response = self.send_request(method_name, args)
+#         return response
 
     def del_user(self, username):
         method_name = "del_user"

@@ -2,6 +2,7 @@ import os
 import sys
 
 external_path = os.path.abspath("..")
+print(external_path)
 sys.path.append(external_path)
 
 from tito_sockets.socket_client import SocketClient
