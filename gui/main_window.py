@@ -7,30 +7,25 @@ from .dialogs.sign_dialogs import signin_window
 
 
 class MainAppWindow(QtWidgets.QWidget):
-    def __init__(self):
+    def __init__(self, server):
         super().__init__()
         self.setWindowTitle("TiToDeal")
         self.resize(100, 100)
 
         window_managment.adjust_by_screen(self)
 
+        server.del_user("test_user")
 
-# if __name__ == "__main__":
+
 def start_main_window():
     app = QtWidgets.QApplication(sys.argv)
 
-#     user_server = user.UserSereverCore()
-
-
-#     if user_server.get_credentials(username, passwd):
-#         w = MainAppWindow()
     signin_dialog = signin_window.SignInDialog()
-    user_server = signin_dialog.exec_()
-    print(user_server)
+    result = signin_dialog.exec_()
 
-#     w = MainAppWindow()
+    if result != 1:
+        return
 
-#     w.show()
-#     button = QtWidgets.QPushButton("HELLO")
-#     button.show()
+    w = MainAppWindow(signin_dialog.server)
+    w.show()
     sys.exit(app.exec_())
