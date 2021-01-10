@@ -13,28 +13,39 @@ class Api(SocketClient):
         super(Api, self).__init__(host=host, port=port, timeout=timeout)
         self.set_connection()
 
-    def create_credentials(self, username, passwd, email):
+    def create_credentials(self, login, passwd, email):
         method_name = "create_credentials"
-        args = [f"{username}", f"{passwd}", f"{email}"]
+        args = [f"{login}", f"{passwd}", f"{email}"]
         response = self.send_request(method_name, args)
         return response
 
-    def get_credentials(self, username, passwd):
+    def get_credentials(self, login, passwd):
         method_name = "get_credentials"
-        args = [f"{username}", f"{passwd}"]
+        args = [f"{login}", f"{passwd}"]
         response = self.send_request(method_name, args)
         return response
 
+    def get_users(self, login):
+        method_name = "get_users"
+        args = [f"{login}"]
+        response = self.send_request(method_name, args)
+        return response
 
-#     def add_user(self, username, passwd, email):
-#         method_name = "add_user"
-#         args = [f"{username}", f"{passwd}", f"{email}"]
-#         response = self.send_request(method_name, args)
-#         return response
-
-    def del_user(self, username):
+    def del_user(self, login):
         method_name = "del_user"
-        args = [f"{username}"]
+        args = [f"{login}"]
+        response = self.send_request(method_name, args)
+        return response
+
+    def get_colleagues(self, login):
+        method_name = "get_colleagues"
+        args = [f"{login}"]
+        response = self.send_request(method_name, args)
+        return response
+
+    def send_invintation(self, fromuser, touser):
+        method_name = "send_invintation"
+        args = [f"{fromuser}", "{touser}"]
         response = self.send_request(method_name, args)
         return response
 
@@ -49,8 +60,41 @@ class Api(SocketClient):
 #         self.send_request(method_name, args)
 
     def send_request(self, method_name, args):
+        """ Response raw data looks like:
+        {returncode: 0|1:int, type: answer|tb_data:str,
+        data: raw_data:list, columns: items:list}
+        """
         message = {"method": f"{method_name}", "args": args}
         self.send_data(message)
         response = self.recv_messages()
         print(f"=> Method process: {method_name} => Response is: {response}")
-        return response
+        return self.__handle_response(response)
+
+    def __handle_response(self, response):
+        """Handles response data """
+
+        returncode = response['returncode']
+        response_data = response['data']
+        type_ = response['type']
+
+        if returncode != 0:
+            print("!=> Error occured: {}".format(response_data))
+            return False, response_data
+
+        if type_ == "answer":
+            print("=> ", response_data)
+            return True, response_data
+
+        if type_ == "tb_data":
+            data = []
+            for row in response_data:
+                row_data = {}
+                for idx, column in enumerate(response['columns']):
+                    row_data[column] = row[idx]
+                data.append(row_data)
+            return True, data
+
+        else:
+            msg = "!=> Unknown  response type"
+            print(msg)
+            return False, msg

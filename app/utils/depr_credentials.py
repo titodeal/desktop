@@ -1,8 +1,8 @@
 # from argon2 import PasswordHasher
 # 
 # class UserCredential:
-#     def __init__(self, username, passwd=None):
-#         self.username = username
+#     def __init__(self, login, passwd=None):
+#         self.login = login
 #         self.passwd = passwd
 # 
 #     def check_user_access(self, passwd, true_hash):

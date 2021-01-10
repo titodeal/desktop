@@ -6,18 +6,18 @@ PORT = 9090
 
 
 class UserSereverCore:
-    def __init__(self, username, passwd):
+    def __init__(self, login, passwd):
         self.api_server = api_client.Api(HOST, PORT)
-#         self.get_credentials(username, passwd)
+#         self.get_credentials(login, passwd)
 
-    def get_credentials(self, username, passwd):
-        returncode, data = self.api_server.get_credentials(username, passwd)
+    def get_credentials(self, login, passwd):
+        returncode, data = self.api_server.get_credentials(login, passwd)
         if returncode != 0:
             return False
 
         return True
 
-#         self.username = username
+#         self.login = login
 # 
 #         self.ture_hash = None
 #         self.email = None

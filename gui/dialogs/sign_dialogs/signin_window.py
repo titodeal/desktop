@@ -1,13 +1,14 @@
-import sys
-import os
 import traceback
 from PySide6 import QtCore, QtWidgets
 
-app_path = os.path.abspath(".")
-sys.path.append(app_path)
 from gui.utils import window_managment
 from app._lib.server import api
+
+from .signup_window import SignupDialog
+
 import config
+
+from app.models.user import main_user
 
 HOST = config.HOST
 PORT = config.PORT
@@ -16,7 +17,8 @@ class SignInDialog(QtWidgets.QDialog):
     def __init__(self):
         super(SignInDialog, self).__init__()
 
-        self.server = None
+#         self.server = None
+        self.user = None
 
         self.setWindowTitle("Sign in dialog")
         self.resize(500, 500)
@@ -29,6 +31,8 @@ class SignInDialog(QtWidgets.QDialog):
         self.signin_core_widget = self.signin_core_widget()
         self.btn_logo = QtWidgets.QPushButton("LOGO")
         self.btn_create_account = QtWidgets.QPushButton("Create account")
+
+        self.btn_create_account.clicked.connect(self.create_account)
 
 
         # Layout setup
@@ -65,7 +69,7 @@ class SignInDialog(QtWidgets.QDialog):
         self.lay_loginpasswd_elements = self.setup_signin_form()
 
         # Widget components 
-        self.label_msg_field = QtWidgets.QLabel("Some field for some text")
+        self.msgfield_lb = QtWidgets.QLabel("Some field for some text")
         self.btn_signin = QtWidgets.QPushButton("Sign in")
 
         # Signals
@@ -74,7 +78,7 @@ class SignInDialog(QtWidgets.QDialog):
         # Layouts setup
         self.w_lay_main_vert.addLayout(self.lay_loginpasswd_elements, 0)
 
-        self.w_lay_main_vert.addWidget(self.label_msg_field, 0,
+        self.w_lay_main_vert.addWidget(self.msgfield_lb, 0,
                                        QtCore.Qt.AlignHCenter)
 
         self.w_lay_main_vert.addWidget(self.btn_signin, 1,
@@ -91,22 +95,23 @@ class SignInDialog(QtWidgets.QDialog):
         lay_grid = QtWidgets.QGridLayout()
 
         # Widget components
-        self.login_lineedit = QtWidgets.QLineEdit()
-        self.passwd_lineedit = QtWidgets.QLineEdit()
+        self.login_le = QtWidgets.QLineEdit()
+        self.passwd_le = QtWidgets.QLineEdit()
 
         self.login_label = QtWidgets.QLabel("Login")
         self.passwd_label = QtWidgets.QLabel("Password")
 
         self.btn_forgot_passwd = QtWidgets.QPushButton("forgot password")
 
+
         # Layout setup
         lay_grid.addWidget(self.login_label, 0, 0,
                            QtCore.Qt.AlignRight)
-        lay_grid.addWidget(self.login_lineedit, 0, 1)
+        lay_grid.addWidget(self.login_le, 0, 1)
 
         lay_grid.addWidget(self.passwd_label, 1, 0,
                            QtCore.Qt.AlignRight)
-        lay_grid.addWidget(self.passwd_lineedit, 1, 1)
+        lay_grid.addWidget(self.passwd_le, 1, 1)
 
         lay_grid.addWidget(self.btn_forgot_passwd, 2, 0, 1, 2,
                            QtCore.Qt.AlignRight)
@@ -116,34 +121,49 @@ class SignInDialog(QtWidgets.QDialog):
 
         return lay_grid
 
-    def connect_to_server(self):
-#         HOST = '192.168.88.122'
+    def _get_server(self):
         try:
-
-            server = api.Api(HOST, PORT, timeout=None)
+            return api.Api(HOST, PORT, timeout=None)
         except Exception:
             exc = traceback.format_exc()
             print("!=> Error connecting to server. {}", exc)
-            self.label_msg_field.setText("Error connecting to server.")
-            self.server = None
-            return
+            return None
 
-        login = self.login_lineedit.text()
-        passwd = self.passwd_lineedit.text()
+    def connect_to_server(self):
+
+        server = self._get_server()
+        if not server:
+            self.msgfield_lb.setText("Error connecting to server.")
+            self.user = None
+            return
+#         try:
+#             server = api.Api(HOST, PORT, timeout=None)
+#         except Exception:
+#             exc = traceback.format_exc()
+#             print("!=> Error connecting to server. {}", exc)
+#             self.msgfield_lb.setText("Error connecting to server.")
+#             self.user = None
+# #             self.server = None
+#             return
+
+        login = self.login_le.text()
+        passwd = self.passwd_le.text()
         response = server.get_credentials(login, passwd)
 
-        if not isinstance(response, list):
-            self.label_msg_field.setText(response)
-            return
-
-        msg = response[1]
-        if response[0] != 0:
-            self.server = None
+        if response[0] is True:
+#             main_user.MainUser.server = server
+            self.user = main_user.MainUser(server, login)
+            self.user.update_user_data()
+            self.accept()
         else:
-            self.server = server
+            self.msgfield_lb.setText(response[1])
 
-        self.label_msg_field.setText(msg)
-        self.accept()
+    def create_account(self):
+        signup_dialog = SignupDialog(self)
+        if signup_dialog.exec_():
+            self.login_le.setText(signup_dialog.login_le.text())
+            self.passwd_le.setText(signup_dialog.passwd_le.text())
+
 
 
 if __name__ == "__main__":

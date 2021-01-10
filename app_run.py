@@ -1,5 +1,5 @@
 #!/usr/bin/python
-from gui import main_window
+from gui.main_window import main_window
 from titoshare_client.api import ApiShare
 from app._lib.server.api import Api as ApiServer
 import sys, os
