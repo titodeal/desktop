@@ -8,7 +8,7 @@ from .signup_window import SignupDialog
 
 import config
 
-from app.models.user import main_user
+from app.models.user import base_user
 
 HOST = config.HOST
 PORT = config.PORT
@@ -151,9 +151,10 @@ class SignInDialog(QtWidgets.QDialog):
         response = server.get_credentials(login, passwd)
 
         if response[0] is True:
-#             main_user.MainUser.server = server
-            self.user = main_user.MainUser(server, login)
-            self.user.update_user_data()
+#             base_user.MainUser.server = server
+#             self.user = base_user.MainUser(server, login)
+            self.user = base_user.BaseUser(login, server)
+#             self.user.update_user_data()
             self.accept()
         else:
             self.msgfield_lb.setText(response[1])

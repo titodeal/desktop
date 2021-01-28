@@ -1,5 +1,6 @@
 from PySide6 import QtCore
-from app.models.user.main_user import MainUser
+# from app.models.user.main_user import MainUser
+# from app.models.user.base_user import BaseUser
 
 
 class PeopleTableModel(QtCore.QAbstractTableModel):

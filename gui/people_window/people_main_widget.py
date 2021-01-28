@@ -16,14 +16,18 @@ class PeopleWidget(QtWidgets.QWidget):
         self.lay_main_hor = QtWidgets.QHBoxLayout(self)
 
         # -------------- Widgets -------------------
-        self.colleagues_tw = PeopleTableView(self.user.colleagues, self)
-#         self.stand_by_tw = PeopleTableView(self.user.colleagues, self)
-#         self.other_tw = PeopleTableView(self.user.colleagues, self)
+#         print("=========", self.user.contractors, "===========")
+        self.colleagues_tw = PeopleTableView(self.user.contractors, self)
 
-        self.people_tab_widget = people_tab_widget.PeopleTabWidget(self.colleagues_tw)
-#                                                                    self.stand_by_tw,
-#                                                                    self.other_tw,
-#                                                                    parent=None)
+        self.standby_tw = PeopleTableView(self.user.standby_offers, self)
+
+        allusers = self.user.get_all_users()
+        self.other_tw = PeopleTableView(allusers, self)
+
+        self.people_tab_widget = people_tab_widget.PeopleTabWidget(self.colleagues_tw,
+                                                                   self.standby_tw,
+                                                                   self.other_tw,
+                                                                   parent=None)
 
         self.userprop_tab_widget = UserPropTabWidget(self)
 

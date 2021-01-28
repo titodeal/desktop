@@ -17,7 +17,7 @@ class UserPropTabWidget(QtWidgets.QTabWidget):
         if not user:
             return
 
-        w = user_properties.UserProperties(user)
+        w = user_properties.UserProperties(user, self.parent().user, parent=self)
 
         currIndex = self.currentIndex()
         self.removeTab(currIndex)
@@ -29,7 +29,7 @@ class UserPropTabWidget(QtWidgets.QTabWidget):
             user = self.get_current_user()
             if not user:
                 return
-        w = user_properties.UserProperties(user)
+        w = user_properties.UserProperties(user, self.parent().user, parent=self)
         currIndex = self.currentIndex()
         self.insertTab(currIndex, w, user.login)
         self.setCurrentIndex(currIndex)

@@ -1,4 +1,5 @@
 from PySide6 import QtWidgets, QtCore, QtGui
+from gui.project_widgets.projects_viewer_widget import project_viewer
 
 
 class HeaderPannel(QtWidgets.QWidget):
@@ -18,10 +19,14 @@ class HeaderPannel(QtWidgets.QWidget):
 
         self.btn_sidebar = QtWidgets.QPushButton("+")
         self.btn_account = QtWidgets.QPushButton("Account")
+        self.btn_project = QtWidgets.QPushButton("...")
 
         self.btn_sidebar.clicked.connect(self.sidebar_OnOff)
+        self.btn_project.clicked.connect(self.select_project)
 
         lay_main_hor.addWidget(self.btn_sidebar, 0,
+                               QtCore.Qt.AlignLeft)
+        lay_main_hor.addWidget(self.btn_project, 0,
                                QtCore.Qt.AlignLeft)
 
         lay_main_hor.addWidget(self.btn_account, 0,
@@ -33,3 +38,17 @@ class HeaderPannel(QtWidgets.QWidget):
         else:
             self.parent().sidebar.set_position()
             self.parent().sidebar.setVisible(True)
+
+    def select_project(self):
+        w = project_viewer.ProjectViewer(self)
+        print("before")
+        print(w.size())
+        print(w.parent())
+#         w.setWindowModality(QtCore.Qt.ApplicationModal)
+        w.show()
+        w.raise_()
+        w.activateWindow()
+#         print(w.sizeHint())
+#         print(w.pos())
+        print(w.isVisible())
+        print("after")

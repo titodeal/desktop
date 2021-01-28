@@ -13,6 +13,9 @@ class SideBar(QtWidgets.QToolBar):
         self.btn_home = self.add_button("Home",
                 lambda x: self.btn_action(self.btn_home.text()))
 
+        self.btn_agreements = self.add_button("Agreements",
+                lambda x: self.btn_action(self.btn_agreements.text()))
+
         self.btn_people = self.add_button("People",
                 lambda x: self.btn_action(self.btn_people.text()))
 
@@ -21,6 +24,7 @@ class SideBar(QtWidgets.QToolBar):
         #---------------------------------
 
         self.addWidget(self.btn_home)
+        self.addWidget(self.btn_agreements)
         self.addWidget(self.btn_people)
         self.addWidget(self.btn_projects)
 
@@ -42,6 +46,11 @@ class SideBar(QtWidgets.QToolBar):
         btn.setDown(True)
 
     def btn_action(self, btn):
+        if btn == "Agreements":
+            self.parent().lay_main_stacked.setCurrentIndex(0)
+        if btn == "People":
+            self.parent().lay_main_stacked.setCurrentIndex(1)
+        self.raise_()
         print(btn)
 
     def set_visibility(self):

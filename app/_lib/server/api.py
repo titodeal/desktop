@@ -36,18 +36,42 @@ class Api(SocketClient):
         args = [f"{login}"]
         response = self.send_request(method_name, args)
         return response
+# 
+#     def get_colleagues(self, login):
+#         method_name = "get_colleagues"
+#         args = [f"{login}"]
+#         response = self.send_request(method_name, args)
+#         return response
 
-    def get_colleagues(self, login):
-        method_name = "get_colleagues"
-        args = [f"{login}"]
+    def get_user_agreements(self, user_id):
+        method_name = "get_user_agreements"
+        args = [f"{user_id}"]
         response = self.send_request(method_name, args)
         return response
 
-    def send_invintation(self, fromuser, touser):
-        method_name = "send_invintation"
-        args = [f"{fromuser}", "{touser}"]
+    def send_offer(self, owner_id, contractor_id):
+        method_name = "send_offer"
+        args = [f"{owner_id}", f"{contractor_id}"]
         response = self.send_request(method_name, args)
         return response
+
+    def accept_agreement(self, agreement_id):
+        method_name = "accept_agreement"
+        args = [f"{agreement_id}"]
+        response = self.send_request(method_name, args)
+        return response
+
+#     def get_user_offers(self, user_id):
+#         method_name = "get_user_offers"
+#         args = [f"{user_id}"]
+#         response = self.send_request(method_name, args)
+#         return response
+# 
+#     def get_user_contractors(self, user_id):
+#         method_name = "get_user_contractors"
+#         args = [f"{user_id}"]
+#         response = self.send_request(method_name, args)
+#         return response
 
 #     def uadd_user(self, mnt_folder):
 #         method_name = "uadd_user"
