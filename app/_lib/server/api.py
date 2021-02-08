@@ -5,9 +5,11 @@ external_path = os.path.abspath("..")
 sys.path.append(external_path)
 
 from tito_sockets.socket_client import SocketClient
+from .api_users import ApiUsers
+from .api_projects import ApiProjects
 
 
-class Api(SocketClient):
+class Api(SocketClient, ApiUsers, ApiProjects):
 
     def __init__(self, host, port, timeout=None):
         super(Api, self).__init__(host=host, port=port, timeout=timeout)
@@ -24,64 +26,6 @@ class Api(SocketClient):
         args = [f"{login}", f"{passwd}"]
         response = self.send_request(method_name, args)
         return response
-
-    def get_users(self, login):
-        method_name = "get_users"
-        args = [f"{login}"]
-        response = self.send_request(method_name, args)
-        return response
-
-    def del_user(self, login):
-        method_name = "del_user"
-        args = [f"{login}"]
-        response = self.send_request(method_name, args)
-        return response
-# 
-#     def get_colleagues(self, login):
-#         method_name = "get_colleagues"
-#         args = [f"{login}"]
-#         response = self.send_request(method_name, args)
-#         return response
-
-    def get_user_agreements(self, user_id):
-        method_name = "get_user_agreements"
-        args = [f"{user_id}"]
-        response = self.send_request(method_name, args)
-        return response
-
-    def send_offer(self, owner_id, contractor_id):
-        method_name = "send_offer"
-        args = [f"{owner_id}", f"{contractor_id}"]
-        response = self.send_request(method_name, args)
-        return response
-
-    def accept_agreement(self, agreement_id):
-        method_name = "accept_agreement"
-        args = [f"{agreement_id}"]
-        response = self.send_request(method_name, args)
-        return response
-
-#     def get_user_offers(self, user_id):
-#         method_name = "get_user_offers"
-#         args = [f"{user_id}"]
-#         response = self.send_request(method_name, args)
-#         return response
-# 
-#     def get_user_contractors(self, user_id):
-#         method_name = "get_user_contractors"
-#         args = [f"{user_id}"]
-#         response = self.send_request(method_name, args)
-#         return response
-
-#     def uadd_user(self, mnt_folder):
-#         method_name = "uadd_user"
-#         args = [f"{mnt_folder}"]
-#         self.send_request(method_name, args)
-# 
-#     def share_catalog(self, catalog, user, passwd):
-#         method_name = "share_catalog"
-#         args = [f"{catalog}", f"{user}", f"{passwd}"]
-#         self.send_request(method_name, args)
 
     def send_request(self, method_name, args):
         """ Response raw data looks like:

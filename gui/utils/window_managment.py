@@ -15,17 +15,6 @@ def adjust_by_screen(window, ratio=1.5):
     window.resize(win_size)
     window.move(new_place)
 
-# def set_mergins(window, layout, w_ratio=0.2, y_ratio=0):
-# 
-#     w_margins = QtCore.QMargins(1, 0, 1, 0) \
-#                 * window.parent().size().width() * w_ratio
-# 
-#     h_margins = QtCore.QMargins(0, 1, 0, 1) \
-#                 * window.parent().size().height() * y_ratio
-# 
-#     margins = w_margins + h_margins
-#     layout.setContentsMargins(margins)
-
 def set_mergins(window, layout, w_ratio=0.2, y_ratio=0):
 
     w_margins = QtCore.QMargins(1, 0, 1, 0) \

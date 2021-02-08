@@ -1,9 +1,10 @@
 from PySide6 import QtWidgets, QtCore
-from projects_table_view import ProjectsTableView
+from .projects_table_view import ProjectsTableView
+from .filters_widget import FiltersWidget
 
-import sys, os
-app_path = os.path.abspath("/home/fed/Development/titodeal_desktop")
-sys.path.append(app_path)
+# import sys, os
+# app_path = os.path.abspath("/home/fed/Development/titodeal_desktop")
+# sys.path.append(app_path)
 
 from gui.utils import window_managment
 
@@ -14,28 +15,41 @@ class ProjectViewer(QtWidgets.QWidget):
 
 #         self.setWindowFlag(QtCore.Qt.Window)
 #         self.setWindowModality(QtCore.Qt.WindowModal)
-        self.resize(400, 200)
+        self.resize(200, 100)
+        window_managment.adjust_by_screen(self)
 
         # ---------  Layouts ------------------
         self.lay_main_vert = QtWidgets.QVBoxLayout(self)
-        self.lay_header_hori = QtWidgets.QHBoxLayout()
+#         self.lay_header_hori = QtWidgets.QHBoxLayout()
 
         # ---------  Widgets ------------------
-        self.lb_header_title = QtWidgets.QLabel("Select a project")
-        self.btn_newproject = QtWidgets.QPushButton("NEW PROJECT")
+#         self.lb_header_title = QtWidgets.QLabel("Select a project")
+#         self.btn_newproject = QtWidgets.QPushButton("NEW PROJECT")
+#         self.btn_newproject.clicked.connect(self.get_current_index)
 
         self.projects_table = ProjectsTableView(self, projects)
+        self.filters_widget = FiltersWidget(self)
+        self.add_filter_fields()
 
-        # ---------  Setup Layouts ------------------
-        self.lay_header_hori.addWidget(self.lb_header_title, 0, QtCore.Qt.AlignLeft)
-        self.lay_header_hori.addWidget(self.btn_newproject, 0, QtCore.Qt.AlignRight)
+#         # ---------  Setup Layouts ------------------
+#         self.lay_header_hori.addWidget(self.lb_header_title, 0, QtCore.Qt.AlignLeft)
+#         self.lay_header_hori.addWidget(self.btn_newproject, 0, QtCore.Qt.AlignRight)
 
-        self.lay_main_vert.addLayout(self.lay_header_hori)
+#         self.lay_main_vert.addLayout(self.lay_header_hori)
         self.lay_main_vert.addWidget(self.projects_table)
+        self.lay_main_vert.addWidget(self.filters_widget)
 
-        window_managment.adjust_by_screen(self)
         self.lay_main_vert.setContentsMargins(QtCore.QMargins(0, 0, 0, 0))
-        window_managment.set_mergins(self, self.lay_header_hori, 0.02, 0.1)
+#         window_managment.set_mergins(self, self.lay_header_hori, 0.02, 0.1)
+
+    def add_filter_fields(self):
+        headers = self.projects_table.model.headers
+        for header in headers:
+            self.filters_widget.add_filter_field([f"{header}"])
+
+    def get_current_index(self):
+        idx = self.projects_table.selection_model.currentIndex()
+        print(idx.data())
 
 class Project:
     def __init__(self, properties):

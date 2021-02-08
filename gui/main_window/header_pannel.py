@@ -1,6 +1,5 @@
 from PySide6 import QtWidgets, QtCore, QtGui
-from gui.project_widgets.projects_viewer_widget import project_viewer
-
+from gui.project_widgets.dialogs.select_project_dialog import SelectProjectDialog
 
 class HeaderPannel(QtWidgets.QWidget):
     """Description"""
@@ -14,6 +13,7 @@ class HeaderPannel(QtWidgets.QWidget):
         self.setPalette(pal)
         self.setAutoFillBackground(True)
         # ---------------
+        self.user = self.parent().user
 
         lay_main_hor = QtWidgets.QHBoxLayout(self)
 
@@ -38,16 +38,17 @@ class HeaderPannel(QtWidgets.QWidget):
         else:
             self.parent().sidebar.set_position()
             self.parent().sidebar.setVisible(True)
+            self.parent().sidebar.raise_()
 
     def select_project(self):
-        w = project_viewer.ProjectViewer(self)
+        w = SelectProjectDialog(self)
         print("before")
         print(w.size())
         print(w.parent())
 #         w.setWindowModality(QtCore.Qt.ApplicationModal)
-        w.show()
-        w.raise_()
-        w.activateWindow()
+        w.exec_()
+#         w.raise_()
+#         w.activateWindow()
 #         print(w.sizeHint())
 #         print(w.pos())
         print(w.isVisible())

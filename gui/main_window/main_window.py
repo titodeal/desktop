@@ -3,11 +3,12 @@ import sys, os
 # from app.utils import user
 from PySide6 import QtCore, QtWidgets, QtGui
 
-# from gui.dialogs.sign_dialogs import signin_window
+from gui.dialogs.sign_dialogs import signin_window
 from gui.utils import window_managment
 
 from gui.people_window import people_main_widget
 from gui.agreement_widgets.agreement_main_w import AgreementMainWidget
+from gui.staff_widgets.staff_main_w import StaffMainWidget
 
 from .header_pannel import HeaderPannel
 from .sidebar import SideBar
@@ -35,12 +36,14 @@ class MainAppWindow(QtWidgets.QWidget):
 
         self.agreement_widget = AgreementMainWidget(user)
         self.people_widget = people_main_widget.PeopleWidget(user)
+        self.staff_widget = StaffMainWidget(self)
 
         # -------------- Signals --------------
 
         # -------------- Layouts setupt --------------
         self.lay_main_stacked.addWidget(self.agreement_widget)
         self.lay_main_stacked.addWidget(self.people_widget)
+        self.lay_main_stacked.addWidget(self.staff_widget)
         self.lay_main_vert.addWidget(self.header_pannel, 0,
                                      QtCore.Qt.AlignTop)
         self.lay_main_vert.addLayout(self.lay_main_stacked)
@@ -54,6 +57,7 @@ class MainAppWindow(QtWidgets.QWidget):
         self.tmp_btn = QtWidgets.QPushButton("RUN")
 #         self.tmp_btn.clicked.connect(self.tmp_click)
         self.lay_main_vert.addWidget(self.tmp_btn)
+        self.lay_main_stacked.setCurrentIndex(2)
 
     def __get_people_data(self):
         collegues = self.user.get_colleagues()
@@ -78,9 +82,9 @@ def create_users(server):
 
 def start_main_window():
     app = QtWidgets.QApplication(sys.argv)
-# 
+
 #     signin_dialog = signin_window.SignInDialog()
-# 
+# # 
 #     if signin_dialog.exec_() != 1:
 #         return
 #-----------------------------------------
@@ -89,8 +93,8 @@ def start_main_window():
     server = api.Api('192.168.88.163', 9090)
     server.get_credentials('AndrIi', '123')
     user = base_user.BaseUser('AndrIi', server)
-#     user.update_user_data()
-
+# 
+# #     user.update_user_data()
 #     create_users(server)
 
     w = MainAppWindow(user)

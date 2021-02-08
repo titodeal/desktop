@@ -1,4 +1,5 @@
 from app.models.agreement import utils as agreement_utils
+from app.models.project.project_model import ProjectModel
 
 
 class BaseUser:
@@ -13,6 +14,8 @@ class BaseUser:
         self.email = ""
         self.icon = ""
 
+        self.projects = []
+        self.current_project = None
         self.offers = []
         self.contractors = []
         self.employers = []
@@ -35,7 +38,15 @@ class BaseUser:
         self.last_name = user_data['last_name']
         self.phone = user_data['phone']
         self.email = user_data['email']
+        self.projects = self.get_user_projects()
+        if self.projects:
+            self.set_current_project(self.projects[0])
 
+    def get_user_projects(self):
+        return ProjectModel.get_user_projects(self.get_server(), self.id)
+
+    def set_current_project(self, project):
+        self.current_project = project
 
     def send_offer(self, contractor_id):
         return_status, msg = self.__server.send_offer(self.id, contractor_id)
@@ -44,9 +55,9 @@ class BaseUser:
     def get_agreements(self):
         response = self.__server.get_user_agreements(self.id)
         if not response[0]:
-            return
+            return [], []
 
-        print(response[1])
+#         print(response[1])
         agreements = []
         offers = []
         for agree in response[1]:
