@@ -50,6 +50,11 @@ class TableModel(QtCore.QAbstractTableModel):
                 else:
                     return QtCore.Qt.Unchecked
 
+    def update_data(self, objects):
+        self.beginResetModel()
+        self.objects = objects
+        self.endResetModel()
+
     def check_item(self, index):
         old_checked_index = self.index(self.checked_row, 0)
         self.checked_row = index.row()

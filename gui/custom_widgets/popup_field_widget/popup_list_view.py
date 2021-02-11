@@ -9,24 +9,37 @@ class PopupListView(QtWidgets.QListView):
 
         self.setSelectionBehavior(self.SelectRows)
         self.setSelectionMode(self.SingleSelection)
-#         self.setTabKeyNavigation(True)
 
-        self.list_model = PopupListModel(items, self)
+        self.model = PopupListModel(items, self)
         self.proxy_model = QtCore.QSortFilterProxyModel(self)
         self.proxy_model.setFilterCaseSensitivity(QtCore.Qt.CaseInsensitive)
-        self.proxy_model.setSourceModel(self.list_model)
+        self.proxy_model.setSourceModel(self.model)
 
         self.setModel(self.proxy_model)
 
         self.selection_model = self.selectionModel()
 
-    def set_current_index(self, idx):
-        model_index = self.model().index(idx, idx)
-        self.selection_model.setCurrentIndex(model_index,
-                                             QtCore.QItemSelectionModel.Select)
+    def get_selected_index(self):
+        if not self.model.rowCount() > 0:
+            return QtCore.QModelIndex()
+        if not self.selection_model.hasSelection():
+            self.set_selection(0)
+        return self.selection_model.selectedIndexes()[0]
 
-    def get_current_index(self):
-        return self.selection_model.currentIndex()
+    def set_selection(self, rowidx, colidx=0):
+        model_index = self.model().index(rowidx, colidx)
+        self.selection_model.select(model_index,
+                                    QtCore.QItemSelectionModel.Select)
+        self.selection_model.setCurrentIndex(model_index,
+                                    QtCore.QItemSelectionModel.Select)
+
+    def select_next_item(self):
+        if not self.selection_model.hasSelection():
+            self.set_selection(0)
+        else:
+            cur_idx = self.get_selected_index().row()
+            self.selection_model.clearSelection()
+            self.set_selection(cur_idx + 1)
 
     def size_item(self):
         idx0 = self.proxy_model.index(0, 0)
@@ -35,18 +48,19 @@ class PopupListView(QtWidgets.QListView):
     def row_count(self):
         return self.proxy_model.rowCount()
 
-#     def event(self, event):
-#         if event.type() == QtCore.QEvent.WindowActivate:
-#             print("Activeated")
-
-        return QtWidgets.QListView.event(self, event)
+    def closeEvent(self, event):
+        self.selection_model.clearSelection()
+        self.selection_model.clearCurrentIndex()
+        return QtWidgets.QLineEdit.closeEvent(self, event)
 
     def keyPressEvent(self, event):
-        if event.type() == QtCore.QEvent.KeyPress:
-            if (event.key() == QtCore.Qt.Key_Return) or \
-               (event.key() == QtCore.Qt.Key_Enter):
-
-                   print("ENTER")
-                   self.parent().set_current_item_value()
-
+        if (event.key() == QtCore.Qt.Key_Return) or \
+           (event.key() == QtCore.Qt.Key_Enter):
+               self.parent().set_selected_value()
+        if event.key() == QtCore.Qt.Key_Tab:
+            self.select_next_item()
+        if event.key() == QtCore.Qt.Key_Escape:
+            self.close()
+            self.parent().setFocus()
         return QtWidgets.QListView.keyPressEvent(self, event)
+

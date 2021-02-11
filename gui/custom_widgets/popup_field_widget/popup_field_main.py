@@ -3,14 +3,15 @@ from .popup_field import PopupField
 
 
 class PopupFieldLabel(QtWidgets.QWidget):
-    def __init__(self, parent=None, items=[]):
+    def __init__(self, parent=None, items=[], label = ""):
         super().__init__(parent)
 
         self.lay_main = QtWidgets.QVBoxLayout(self)
         self.lay_main.setContentsMargins(0, 5, 0, 0)
 
+        self.name = label
         self.lb_label = QtWidgets.QLabel(self)
-        self.lb_label.setText("Some Text")
+        self.lb_label.setText(self.name)
 
         self.field = PopupField(self, items)
 
@@ -35,4 +36,6 @@ class PopupFieldLabel(QtWidgets.QWidget):
     def set_label_text(self, text):
         self.lb_label.setText(text)
 
-
+    def update_popup_list(self, items):
+        self.field.update_list_data(items)
+        self.field.size_list_done = False

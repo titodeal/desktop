@@ -1,19 +1,19 @@
 from PySide6 import QtWidgets, QtCore
 from .table_view import TableView
 from .filters_w import FiltersWidget
-# from gui.custom_widgets.popup_field_widget.list_field import PopupField as FiltersWidget
-
 from gui.utils import window_managment
 
 
 class TableFiltersWidget(QtWidgets.QWidget):
     """objects - list of some class objects;
        headers - list of some class objects attributes"""
-    def __init__(self, parent=None, objects=[], headers=[]):
+    def __init__(self, parent=None, objects=[], headers=[], filter_list=True):
         super().__init__(parent)
 
         self.resize(200, 100)
         window_managment.adjust_by_screen(self)
+
+        self.filter_list = filter_list
 
         # ---------  Layouts ------------------
         self.lay_main_vert = QtWidgets.QVBoxLayout(self)
@@ -34,8 +34,8 @@ class TableFiltersWidget(QtWidgets.QWidget):
     def add_filter_fields(self):
         headers = self.table_view.model.headers
         for idx, header in enumerate(headers):
-            column_data = self.table_view.get_all_column_data(idx)
-            self.filters_widget.add_filter_field(column_data)
+            items = self._get_filter_items(idx)
+            self.filters_widget.add_filter_field(items, header)
 
     def get_current_index(self):
         idx = self.table_view.selection_model.currentIndex()
@@ -52,3 +52,33 @@ class TableFiltersWidget(QtWidgets.QWidget):
 
     def set_vheaders_visible(self, _bool):
         self.table_view.vheader_view.setVisible(_bool)
+
+    def set_visible_hheaders(self, headers_list=[]):
+        all_headers = self.table_view.model.headers
+        for idx, header in enumerate(all_headers):
+            if header in headers_list:
+                self.table_view.hheader_view.showSection(idx)
+                self.filters_widget.show_filter(header)
+                self.table_view.header_menu.actions()[idx].setChecked(True)
+            else:
+                self.table_view.hheader_view.hideSection(idx)
+                self.filters_widget.hide_filter(header)
+                self.table_view.header_menu.actions()[idx].setChecked(False)
+
+    def update_table_data(self, objects):
+        self.table_view.model.update_data(objects)
+        self.update_filter_list()
+
+    def _get_filter_items(self, column_idx):
+        return self.table_view.get_all_column_data(column_idx) if self.filter_list else []
+
+    def update_filter_list(self):
+        all_headers = self.table_view.model.headers
+        for idx, header in enumerate(all_headers):
+            items = self._get_filter_items(idx)
+            self.filters_widget.update_popup_list(header, items)
+
+    def enable_filter_list(self, bool_):
+        self.filter_list = bool_
+        self.update_filter_list()
+

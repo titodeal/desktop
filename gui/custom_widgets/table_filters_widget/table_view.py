@@ -6,6 +6,8 @@ class TableView(QtWidgets.QTableView):
     def __init__(self, parent=None, objects=[], headers=[]):
         super().__init__(parent)
 
+        self.setShowGrid(False)
+
         self.model = TableModel(parent, objects, headers)
         self.proxy_model = QtCore.QSortFilterProxyModel(self)
         self.proxy_model.setSourceModel(self.model)
@@ -16,11 +18,14 @@ class TableView(QtWidgets.QTableView):
         self.set_selection_model()
 
         self.hheader_view = self.horizontalHeader()
+        self.hheader_view.setSectionsMovable(True)
+        self.hheader_view.sectionMoved.connect(self.hheader_moved)
         self.vheader_view = self.verticalHeader()
 
         self.set_hheader_view()
 
-        self.setShowGrid(False)
+        # ---------- Signals --------------------
+        self.clicked.connect(self.current_selection_changed)
 
     def set_hheader_view(self):
         header = self.hheader_view
@@ -35,11 +40,11 @@ class TableView(QtWidgets.QTableView):
     def set_selection_model(self):
         self.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
         self.setSelectionMode(self.SingleSelection)
-        self.selection_model.currentChanged.connect(self.current_selection_changed)
 
     def setup_header_context_menu(self):
         self.header_menu = QtWidgets.QMenu(self.hheader_view)
-        headers = self.model.headers[1:]
+#         headers = self.model.headers[1:]
+        headers = self.model.headers
         for header in headers:
             action = QtGui.QAction(header, self.header_menu)
             action.setCheckable(True)
@@ -48,16 +53,18 @@ class TableView(QtWidgets.QTableView):
 
     def exec_header_menu(self, pos):
         act = self.header_menu.exec_(self.mapToGlobal(pos))
+        if not act:
+            return
         header_idx = self.model.headers.index(act.text())
+        logic_idx = self.hheader_view.logicalIndex(header_idx)
         if act.isChecked():
             self.hheader_view.showSection(header_idx)
-            self.parent().filters_widget.show_widget(header_idx)
+            self.parent().filters_widget.show_filter(act.text())
         else:
             self.hheader_view.hideSection(header_idx)
-            self.parent().filters_widget.hide_widget(header_idx)
-        print(header_idx)
+            self.parent().filters_widget.hide_filter(act.text())
 
-    def current_selection_changed(self, index, pre_index):
+    def current_selection_changed(self, index):
         self.model.check_item(index)
         print(index.data())
 
@@ -71,4 +78,19 @@ class TableView(QtWidgets.QTableView):
             data.append(self.get_index_data(row, column, role))
         return data
 
+    # ------------ Events ---------------
+    def hheader_moved(self, callidx, oldidx, newidx):
+        self.parent().filters_widget.swap_filters(oldidx, newidx)
+
+    def mousePressEvent(self, event):
+        index = self.indexAt(event.pos())
+        if not index.isValid():
+            self.selection_model.clearSelection()
+            self.selection_model.clearCurrentIndex()
+        self.clicked.emit(index)
+        return QtWidgets.QTableView.mouseMoveEvent(self, event)
+
+    def focusOutEvent(self, event):
+        self.selection_model.clearCurrentIndex()
+        self.selection_model.clearSelection()
 
