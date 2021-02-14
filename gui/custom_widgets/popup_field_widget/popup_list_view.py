@@ -27,7 +27,7 @@ class PopupListView(QtWidgets.QListView):
         return self.selection_model.selectedIndexes()[0]
 
     def set_selection(self, rowidx, colidx=0):
-        model_index = self.model().index(rowidx, colidx)
+        model_index = self.model.index(rowidx, colidx)
         self.selection_model.select(model_index,
                                     QtCore.QItemSelectionModel.Select)
         self.selection_model.setCurrentIndex(model_index,

@@ -8,42 +8,51 @@ class TableView(QtWidgets.QTableView):
 
         self.setShowGrid(False)
 
+        # ------------ Table Model ------------
         self.model = TableModel(parent, objects, headers)
+        # ------------ Proxy Model ------------
         self.proxy_model = QtCore.QSortFilterProxyModel(self)
         self.proxy_model.setSourceModel(self.model)
 
         self.setModel(self.proxy_model)
 
+        # ------------ Selection Model ------------
         self.selection_model = self.selectionModel()
-        self.set_selection_model()
+        self._set_selection_model()
 
-        self.hheader_view = self.horizontalHeader()
-        self.hheader_view.setSectionsMovable(True)
-        self.hheader_view.sectionMoved.connect(self.hheader_moved)
-        self.vheader_view = self.verticalHeader()
+        # ------------ Header Views ------------
+        self.hheader = self.horizontalHeader()
+        self.hheader.setSectionsMovable(True)
+        self.hheader.sectionMoved.connect(self.hheader_moved)
+        self.vheader = self.verticalHeader()
+        self.vheader.pre_width = 0
+        self._set_hheader()
 
-        self.set_hheader_view()
+        # ------------ Scroll Bar ------------
+        self.vscroll = self.verticalScrollBar()
+        self.vscroll.visibility = False
 
         # ---------- Signals --------------------
         self.clicked.connect(self.current_selection_changed)
 
-    def set_hheader_view(self):
-        header = self.hheader_view
+    def _set_selection_model(self):
+        """ Setup for selection model """
+        self.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+        self.setSelectionMode(self.SingleSelection)
+
+    def _set_hheader(self):
+        """ Setup for vertical headers """
+        header = self.hheader
         header.setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
         header.setDefaultAlignment(QtCore.Qt.AlignLeft)
         header.setSectionsClickable(False)
 
-        self.setup_header_context_menu()
+        self._setup_header_context_menu()
         header.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
-        header.customContextMenuRequested.connect(self.exec_header_menu)
+        header.customContextMenuRequested.connect(self._exec_header_menu)
 
-    def set_selection_model(self):
-        self.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
-        self.setSelectionMode(self.SingleSelection)
-
-    def setup_header_context_menu(self):
-        self.header_menu = QtWidgets.QMenu(self.hheader_view)
-#         headers = self.model.headers[1:]
+    def _setup_header_context_menu(self):
+        self.header_menu = QtWidgets.QMenu(self.hheader)
         headers = self.model.headers
         for header in headers:
             action = QtGui.QAction(header, self.header_menu)
@@ -51,25 +60,22 @@ class TableView(QtWidgets.QTableView):
             action.setChecked(True)
             self.header_menu.addAction(action)
 
-    def exec_header_menu(self, pos):
+    def _exec_header_menu(self, pos):
         act = self.header_menu.exec_(self.mapToGlobal(pos))
         if not act:
             return
         header_idx = self.model.headers.index(act.text())
-        logic_idx = self.hheader_view.logicalIndex(header_idx)
+        logic_idx = self.hheader.logicalIndex(header_idx)
         if act.isChecked():
-            self.hheader_view.showSection(header_idx)
+            self.hheader.showSection(header_idx)
             self.parent().filters_widget.show_filter(act.text())
         else:
-            self.hheader_view.hideSection(header_idx)
+            self.hheader.hideSection(header_idx)
             self.parent().filters_widget.hide_filter(act.text())
 
     def current_selection_changed(self, index):
         self.model.check_item(index)
         print(index.data())
-
-    def get_index_data(self, row, column, role=QtCore.Qt.DisplayRole):
-        return self.model.index(row, column).data(role)
 
     def get_all_column_data(self, column, role=QtCore.Qt.DisplayRole):
         data = []
@@ -77,6 +83,9 @@ class TableView(QtWidgets.QTableView):
         for row in range(row_count):
             data.append(self.get_index_data(row, column, role))
         return data
+
+    def get_index_data(self, row, column, role=QtCore.Qt.DisplayRole):
+        return self.model.index(row, column).data(role)
 
     # ------------ Events ---------------
     def hheader_moved(self, callidx, oldidx, newidx):
@@ -94,3 +103,19 @@ class TableView(QtWidgets.QTableView):
         self.selection_model.clearCurrentIndex()
         self.selection_model.clearSelection()
 
+    def paintEvent(self, event):
+        # ----- Alignt the filters field -----
+        self.adjust_filters_area()
+        return QtWidgets.QTableView.paintEvent(self, event)
+
+    def adjust_filters_area(self):
+        """ Align the filters fields with the table widget """
+        vheader_width = self.vheader.width()
+        vscroll_width = self.vscroll.width()
+        if vheader_width != self.vheader.pre_width:
+            self.vheader.pre_width = vheader_width
+            self.parent().filters_widget.adjust_front_space(vheader_width)
+        if self.vscroll.isVisible() != self.vscroll.visibility:
+            self.vscroll.visibility = self.vscroll.isVisible()
+            last_space = 0 if self.vscroll.visibility is False else vscroll_width
+            self.parent().filters_widget.adjust_last_space(last_space)

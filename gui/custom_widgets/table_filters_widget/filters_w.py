@@ -13,9 +13,26 @@ class FiltersWidget(QtWidgets.QWidget):
         self.lay_main_hor.setContentsMargins(QtCore.QMargins(0, 0, 0, 0))
         self.lay_main_hor.setSpacing(0)
 
+        self.lay_filters_hor = QtWidgets.QHBoxLayout()
+        self.lay_filters_hor.setContentsMargins(QtCore.QMargins(0, 0, 0, 0))
+        self.lay_filters_hor.setSpacing(0)
+
+        self.lay_main_hor.addLayout(self.lay_filters_hor)
+        self.lay_main_hor.insertSpacing(0, 0)
+        self.lay_main_hor.addSpacing(0)
+
+    def adjust_front_space(self, front_space):
+        self.lay_main_hor.itemAt(0).changeSize(front_space, 0)
+        self.lay_main_hor.invalidate()
+
+    def adjust_last_space(self, last_space):
+        count = self.lay_main_hor.count()
+        self.lay_main_hor.itemAt(count-1).changeSize(last_space, 0)
+        self.lay_main_hor.invalidate()
+
     def add_filter_field(self, items, label):
         filter_field = PopupFieldLabel(self, items, label)
-        self.lay_main_hor.addWidget(filter_field)
+        self.lay_filters_hor.addWidget(filter_field)
         filter_field.field.textChanged.connect(lambda x, y=label:
                                                self.start_filter_table(x, y))
 
@@ -30,9 +47,11 @@ class FiltersWidget(QtWidgets.QWidget):
         w.update_popup_list(items)
 
     def get_filter_by_name(self, name):
-        widgets_count = self.lay_main_hor.count()
+        widgets_count = self.lay_filters_hor.count()
         for i in range(widgets_count):
-            w = self.lay_main_hor.itemAt(i).widget()
+            w = self.lay_filters_hor.itemAt(i).widget()
+            if w is None:
+                continue
             if name == w.name:
                 return w
 
@@ -46,21 +65,9 @@ class FiltersWidget(QtWidgets.QWidget):
 
     def swap_filters(self, from_idx, to_idx):
         # ----------- Swap widgets -----------
-        w1 = self.lay_main_hor.itemAt(from_idx).widget()
-        self.lay_main_hor.removeWidget(w1)
-        self.lay_main_hor.insertWidget(to_idx, w1)
-
+        w1 = self.lay_filters_hor.itemAt(from_idx).widget()
+        self.lay_filters_hor.removeWidget(w1)
+        self.lay_filters_hor.insertWidget(to_idx, w1)
         # ----------- Swap actions -----------
         header_menu = self.parent().table_view.header_menu
         action = header_menu.actions()[from_idx]
-#         if from_idx > to_idx:
-#             action_before = header_menu.actions()[to_idx]
-#         elif len(header_menu.actions()) == to_idx + 1:
-#             action_before = None
-#         else:
-#             action_before = header_menu.actions()[to_idx + 1]
-#         header_menu.removeAction(action)
-#         header_menu.insertAction(action_before, action)
-
-
-

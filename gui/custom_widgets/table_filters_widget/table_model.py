@@ -50,6 +50,26 @@ class TableModel(QtCore.QAbstractTableModel):
                 else:
                     return QtCore.Qt.Unchecked
 
+    def insertRows(self, objects_data, row=0, parent=QtCore.QModelIndex()):
+        count = len(objects_data)
+        self.beginInsertRows(parent, row, row+count-1)
+        self.objects[row:row] = objects_data
+        self.endInsertRows()
+        return True
+
+    def insertRow(self, objects_data, row=0, parent=QtCore.QModelIndex()):
+        count = len(objects)
+        self.beginInsertRows(parent, row, row+count-1)
+        self.objects[row:row] = [objects_data]
+        self.endInsertRows()
+        return True
+
+    def removeRows(self, row, count, parent=QtCore.QModelIndex()):
+        self.beginRemoveRows(parent, row, row+count-1)
+        self.objects[row:row+count] = []
+        self.endRemoveRows()
+        return True
+
     def update_data(self, objects):
         self.beginResetModel()
         self.objects = objects

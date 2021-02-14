@@ -1,6 +1,10 @@
 from PySide6 import QtWidgets, QtCore
-from .projects_table_view import ProjectsTableView
-from .filters_widget import FiltersWidget
+# from .projects_table_view import ProjectsTableView
+# from .filters_widget import FiltersWidget
+
+from gui.custom_widgets. \
+     table_filters_widget. \
+     table_filters_w import TableFiltersWidget
 
 # import sys, os
 # app_path = os.path.abspath("/home/fed/Development/titodeal_desktop")
@@ -26,10 +30,11 @@ class ProjectViewer(QtWidgets.QWidget):
 #         self.lb_header_title = QtWidgets.QLabel("Select a project")
 #         self.btn_newproject = QtWidgets.QPushButton("NEW PROJECT")
 #         self.btn_newproject.clicked.connect(self.get_current_index)
-
-        self.projects_table = ProjectsTableView(self, projects)
-        self.filters_widget = FiltersWidget(self)
-        self.add_filter_fields()
+        headers = ["id", "name", "owner", "status"]
+        self.projects_table = TableFiltersWidget(self, get_projects(), headers)
+#         self.projects_table = ProjectsTableView(self, projects)
+#         self.filters_widget = FiltersWidget(self)
+#         self.add_filter_fields()
 
 #         # ---------  Setup Layouts ------------------
 #         self.lay_header_hori.addWidget(self.lb_header_title, 0, QtCore.Qt.AlignLeft)
@@ -37,7 +42,7 @@ class ProjectViewer(QtWidgets.QWidget):
 
 #         self.lay_main_vert.addLayout(self.lay_header_hori)
         self.lay_main_vert.addWidget(self.projects_table)
-        self.lay_main_vert.addWidget(self.filters_widget)
+#         self.lay_main_vert.addWidget(self.filters_widget)
 
         self.lay_main_vert.setContentsMargins(QtCore.QMargins(0, 0, 0, 0))
 #         window_managment.set_mergins(self, self.lay_header_hori, 0.02, 0.1)

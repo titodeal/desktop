@@ -29,7 +29,12 @@ class TableFiltersWidget(QtWidgets.QWidget):
         self.lay_main_vert.addWidget(self.filters_widget)
         self.lay_main_vert.addWidget(self.table_view)
 
+#         self.update_table_data(objects)
 #         window_managment.set_mergins(self, self.lay_header_hori, 0.02, 0.1)
+#         self.filters_widget.adjust_pudding_space()
+
+    def _get_filter_items(self, column_idx):
+        return self.table_view.get_all_column_data(column_idx) if self.filter_list else []
 
     def add_filter_fields(self):
         headers = self.table_view.model.headers
@@ -41,16 +46,23 @@ class TableFiltersWidget(QtWidgets.QWidget):
         idx = self.table_view.selection_model.currentIndex()
         print(idx.data())
 
+    def insert_rows(self, objects_data, row=0):
+        self.table_view.model.insertRows(objects_data, row)
+
     def set_items_flags(self, flags):
         self.table_view.model.set_flags(flags)
 
     def set_items_checkable(self, _bool):
         self.table_view.model.set_checkable(_bool)
 
-    def set_hheaders_visible(self, _bool):
+    def enable_filter_list(self, bool_):
+        self.filter_list = bool_
+        self._update_filter_list()
+
+    def enabel_hheaders_visible(self, _bool):
         self.table_view.hheader_view.setVisible(_bool)
 
-    def set_vheaders_visible(self, _bool):
+    def enable_vheaders_visible(self, _bool):
         self.table_view.vheader_view.setVisible(_bool)
 
     def set_visible_hheaders(self, headers_list=[]):
@@ -67,18 +79,10 @@ class TableFiltersWidget(QtWidgets.QWidget):
 
     def update_table_data(self, objects):
         self.table_view.model.update_data(objects)
-        self.update_filter_list()
+        self._update_filter_list()
 
-    def _get_filter_items(self, column_idx):
-        return self.table_view.get_all_column_data(column_idx) if self.filter_list else []
-
-    def update_filter_list(self):
+    def _update_filter_list(self):
         all_headers = self.table_view.model.headers
         for idx, header in enumerate(all_headers):
             items = self._get_filter_items(idx)
             self.filters_widget.update_popup_list(header, items)
-
-    def enable_filter_list(self, bool_):
-        self.filter_list = bool_
-        self.update_filter_list()
-

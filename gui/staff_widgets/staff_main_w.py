@@ -15,24 +15,33 @@ class StaffMainWidget(QtWidgets.QWidget):
         # --------- Table Widgete ------------
         headers = ["name", "status", "count", "email"]
         visible_headers = ["status", "name", "email"]
-        objs = TempObj.get_list_objects(5)
-        self.stuff_table = TableFiltersWidget(self, objs, headers)
-#         self.stuff_table.set_hheaders_visible(False)
-        self.stuff_table.set_vheaders_visible(False)
-        self.stuff_table.set_visible_hheaders(visible_headers)
-#         self.stuff_table.set_visible_hheaders([0,1,2])
+        objs = TempObj.get_list_objects(10)
+        self.staff_table = TableFiltersWidget(self, objs, headers)
+#         self.staff_table.set_items_checkable(True)
+#         self.staff_table.set_hheaders_visible(False)
+#         self.staff_table.enable_vheaders_visible(False)
+#         self.staff_table.set_visible_hheaders(visible_headers)
+#         self.staff_table.filters_widget.adjust_pudding_space()
 
         # --------- Button ---------------
         self.btn_send_invite = QtWidgets.QPushButton("SEND PROJECT INVITE")
         self.btn_send_invite.clicked.connect(self.open_project_invite)
 
+        self.btn_add_row = QtWidgets.QPushButton("Add Row")
+        self.btn_add_row.clicked.connect(self.add_row)
+
         # --------- Setup Layouts ---------
         self.lay_main_vert.addWidget(self.btn_send_invite)
-        self.lay_main_vert.addWidget(self.stuff_table)
+        self.lay_main_vert.addWidget(self.btn_add_row)
+        self.lay_main_vert.addWidget(self.staff_table)
+
+    def add_row(self):
+        objects = TempObj.get_list_objects2(1)
+        self.staff_table.insert_rows(objects)
 
     def open_project_invite(self):
-#         self.tst_update_data()
-        self.stuff_table.enable_filter_list(True)
+        self.tst_update_data()
+        self.staff_table.enable_filter_list(True)
 #         self.tst()
         return
         curr_user = self.parent().user
@@ -47,8 +56,8 @@ class StaffMainWidget(QtWidgets.QWidget):
         w.show()
 
     def tst_update_data(self):
-        objs = TempObj.get_list_objects2(10000)
-        self.stuff_table.update_table_data(objs)
+        objs = TempObj.get_list_objects2(1)
+        self.staff_table.update_table_data(objs)
 #     def tst(self):
 #         headers = ["name", "status", "count"]
 #         objs = TempObj.get_list_objects(5)
