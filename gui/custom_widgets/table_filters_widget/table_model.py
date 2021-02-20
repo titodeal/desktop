@@ -1,4 +1,5 @@
 from PySide6 import QtCore
+import traceback
 
 
 class TableModel(QtCore.QAbstractTableModel):
@@ -41,7 +42,13 @@ class TableModel(QtCore.QAbstractTableModel):
         if role == QtCore.Qt.DisplayRole:
             header = self.headers[index.column()]
             obj = self.objects[index.row()]
-            return getattr(obj, header)
+            try:
+                return getattr(obj, header)
+            except AttributeError as e:
+                print("!=> Error occured:")
+                traceback.print_exc()
+                print("---stack end----------")
+
 
         if self.checkable:
             if role == QtCore.Qt.CheckStateRole and index.column() == 0:
@@ -49,6 +56,12 @@ class TableModel(QtCore.QAbstractTableModel):
                     return QtCore.Qt.Checked
                 else:
                     return QtCore.Qt.Unchecked
+
+    def setData(self, index, value, role):
+        if role == QtCore.Qt.EditRole:
+            setattr(self.objects[index.row()], self.headers[index.column()], value)
+            self.dataChanged.emit(index, index)
+            return True
 
     def insertRows(self, objects_data, row=0, parent=QtCore.QModelIndex()):
         count = len(objects_data)

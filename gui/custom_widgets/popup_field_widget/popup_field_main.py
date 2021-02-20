@@ -4,6 +4,7 @@ from .popup_field import PopupField
 
 class PopupFieldLabel(QtWidgets.QWidget):
     def __init__(self, parent=None, items=[], label = ""):
+
         super().__init__(parent)
 
         self.lay_main = QtWidgets.QVBoxLayout(self)

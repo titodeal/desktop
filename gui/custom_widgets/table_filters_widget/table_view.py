@@ -22,8 +22,6 @@ class TableView(QtWidgets.QTableView):
 
         # ------------ Header Views ------------
         self.hheader = self.horizontalHeader()
-        self.hheader.setSectionsMovable(True)
-        self.hheader.sectionMoved.connect(self.hheader_moved)
         self.vheader = self.verticalHeader()
         self.vheader.pre_width = 0
         self._set_hheader()
@@ -31,6 +29,8 @@ class TableView(QtWidgets.QTableView):
         # ------------ Scroll Bar ------------
         self.vscroll = self.verticalScrollBar()
         self.vscroll.visibility = False
+        self.hscroll = self.horizontalScrollBar()
+        self.hscroll.setVisible(False)
 
         # ---------- Signals --------------------
         self.clicked.connect(self.current_selection_changed)
@@ -41,9 +41,15 @@ class TableView(QtWidgets.QTableView):
         self.setSelectionMode(self.SingleSelection)
 
     def _set_hheader(self):
-        """ Setup for vertical headers """
+        """ Setup for horizontal headers """
         header = self.hheader
-        header.setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
+        header.setSectionsMovable(True)
+        header.setFirstSectionMovable(False)
+        header.sectionMoved.connect(self.hheader_moved)
+
+        header.setSectionResizeMode(QtWidgets.QHeaderView.Interactive)
+
+        header.setStretchLastSection(True)
         header.setDefaultAlignment(QtCore.Qt.AlignLeft)
         header.setSectionsClickable(False)
 
@@ -65,11 +71,14 @@ class TableView(QtWidgets.QTableView):
         if not act:
             return
         header_idx = self.model.headers.index(act.text())
-        logic_idx = self.hheader.logicalIndex(header_idx)
+#         logic_idx = self.hheader.logicalIndex(header_idx)
         if act.isChecked():
             self.hheader.showSection(header_idx)
             self.parent().filters_widget.show_filter(act.text())
         else:
+            if self.hheader.hiddenSectionCount() == self.hheader.count() - 1:
+                act.setChecked(True)
+                return
             self.hheader.hideSection(header_idx)
             self.parent().filters_widget.hide_filter(act.text())
 
@@ -97,11 +106,13 @@ class TableView(QtWidgets.QTableView):
             self.selection_model.clearSelection()
             self.selection_model.clearCurrentIndex()
         self.clicked.emit(index)
-        return QtWidgets.QTableView.mouseMoveEvent(self, event)
+        event.ignore()
+        return QtWidgets.QTableView.mousePressEvent(self, event)
 
     def focusOutEvent(self, event):
-        self.selection_model.clearCurrentIndex()
-        self.selection_model.clearSelection()
+        return QtWidgets.QTableView.focusOutEvent(self, event)
+#         self.selection_model.clearCurrentIndex()
+#         self.selection_model.clearSelection()
 
     def paintEvent(self, event):
         # ----- Alignt the filters field -----

@@ -24,6 +24,8 @@ class SideBar(QtWidgets.QToolBar):
 
         self.btn_stuff = self.add_button("Stuff",
                 lambda x: self.btn_action(self.btn_stuff.text()))
+        self.btn_contracts = self.add_button("Contracts",
+                lambda x: self.btn_action(self.btn_contracts.text()))
         #---------------------------------
 
         self.addWidget(self.btn_home)
@@ -31,6 +33,7 @@ class SideBar(QtWidgets.QToolBar):
         self.addWidget(self.btn_people)
         self.addWidget(self.btn_projects)
         self.addWidget(self.btn_stuff)
+        self.addWidget(self.btn_contracts)
 
         self.addSeparator()
         self.setAutoFillBackground(True)
@@ -56,6 +59,8 @@ class SideBar(QtWidgets.QToolBar):
             self.parent().lay_main_stacked.setCurrentIndex(1)
         if btn == "Stuff":
             self.parent().lay_main_stacked.setCurrentIndex(2)
+        if btn == "Contracts":
+            self.parent().lay_main_stacked.setCurrentIndex(3)
         self.raise_()
         print(btn)
 

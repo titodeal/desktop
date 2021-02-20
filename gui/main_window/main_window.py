@@ -9,6 +9,7 @@ from gui.utils import window_managment
 from gui.people_window import people_main_widget
 from gui.agreement_widgets.agreement_main_w import AgreementMainWidget
 from gui.staff_widgets.staff_main_w import StaffMainWidget
+from gui.contracts_widgets.contracts_main_w import ContractsMainWidget
 
 from .header_pannel import HeaderPannel
 from .sidebar import SideBar
@@ -37,6 +38,7 @@ class MainAppWindow(QtWidgets.QWidget):
         self.agreement_widget = AgreementMainWidget(user)
         self.people_widget = people_main_widget.PeopleWidget(user)
         self.staff_widget = StaffMainWidget(self)
+        self.contracts_widget = ContractsMainWidget()
 
         # -------------- Signals --------------
 
@@ -44,6 +46,7 @@ class MainAppWindow(QtWidgets.QWidget):
         self.lay_main_stacked.addWidget(self.agreement_widget)
         self.lay_main_stacked.addWidget(self.people_widget)
         self.lay_main_stacked.addWidget(self.staff_widget)
+        self.lay_main_stacked.addWidget(self.contracts_widget)
         self.lay_main_vert.addWidget(self.header_pannel, 0,
                                      QtCore.Qt.AlignTop)
         self.lay_main_vert.addLayout(self.lay_main_stacked)

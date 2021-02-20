@@ -18,8 +18,8 @@ class StaffMainWidget(QtWidgets.QWidget):
         objs = TempObj.get_list_objects(10)
         self.staff_table = TableFiltersWidget(self, objs, headers)
 #         self.staff_table.set_items_checkable(True)
-#         self.staff_table.set_hheaders_visible(False)
-#         self.staff_table.enable_vheaders_visible(False)
+#         self.staff_table.enable_hheaders_visible(False)
+        self.staff_table.enable_vheaders_visible(False)
 #         self.staff_table.set_visible_hheaders(visible_headers)
 #         self.staff_table.filters_widget.adjust_pudding_space()
 
@@ -31,9 +31,13 @@ class StaffMainWidget(QtWidgets.QWidget):
         self.btn_add_row.clicked.connect(self.add_row)
 
         # --------- Setup Layouts ---------
+#         scroll = QtWidgets.QScrollArea(self)
+#         scroll.setWidget(self.staff_table)
+
         self.lay_main_vert.addWidget(self.btn_send_invite)
         self.lay_main_vert.addWidget(self.btn_add_row)
         self.lay_main_vert.addWidget(self.staff_table)
+#         self.lay_main_vert.addWidget(scroll)
 
     def add_row(self):
         objects = TempObj.get_list_objects2(1)
