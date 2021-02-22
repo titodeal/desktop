@@ -21,6 +21,8 @@ class FiltersWidget(QtWidgets.QWidget):
         self.lay_main_hor.insertSpacing(0, 0)
         self.lay_main_hor.addSpacing(0)
 
+        self.is_showed = False
+
     def adjust_front_space(self, front_space):
         self.lay_main_hor.itemAt(0).changeSize(front_space, 0)
         self.lay_main_hor.invalidate()
@@ -126,7 +128,7 @@ class FiltersWidget(QtWidgets.QWidget):
 
     def showEvent(self, event):
         self._update_layout()
-        self.is_showed = False
+#         self.is_showed = False
 
     def paintEvent(self, event):
         if not self.is_showed:

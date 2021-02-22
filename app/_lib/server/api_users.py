@@ -35,3 +35,9 @@ class ApiUsers:
         args = [f"{project_id}", f"{agreement_id}"]
         response = self.send_request(method_name, args)
         return response
+
+    def get_user_contracts(self, user_id):
+        method_name = "get_user_contracts"
+        args = [f"{user_id}"]
+        response = self.send_request(method_name, args)
+        return response

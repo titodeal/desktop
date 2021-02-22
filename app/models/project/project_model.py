@@ -2,7 +2,7 @@
 
 class ProjectModel:
     def __init__(self, _id, name, owner_id, root, fps, status):
-        self._id = _id
+        self.id = _id
         self.name = name
         self.owner_id = owner_id
         self.root = root

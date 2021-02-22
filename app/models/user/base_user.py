@@ -52,6 +52,7 @@ class BaseUser:
         return_status, msg = self.__server.send_offer(self.id, contractor_id)
         return return_status
 
+    #/////////////// DEPRICATED //////////////////////
     def get_agreements(self):
         response = self.__server.get_user_agreements(self.id)
         if not response[0]:

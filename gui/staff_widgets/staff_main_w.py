@@ -2,7 +2,7 @@ from PySide6 import QtWidgets, QtCore
 # from .staff_vi_model import StaffViewModel
 
 from gui.project_widgets.project_invite.project_invite_dialog import ProjectInvite
-from gui.custom_widgets.table_filters_widget.table_filters_w import TableFiltersWidget
+from gui.custom_widgets.table_filters_widget.table_filters_w import TableFilterScrollArea
 
 
 class StaffMainWidget(QtWidgets.QWidget):
@@ -16,7 +16,7 @@ class StaffMainWidget(QtWidgets.QWidget):
         headers = ["name", "status", "count", "email"]
         visible_headers = ["status", "name", "email"]
         objs = TempObj.get_list_objects(10)
-        self.staff_table = TableFiltersWidget(self, objs, headers)
+        self.staff_table = TableFilterScrollArea(self, objs, headers)
 #         self.staff_table.set_items_checkable(True)
 #         self.staff_table.enable_hheaders_visible(False)
         self.staff_table.enable_vheaders_visible(False)
@@ -44,10 +44,10 @@ class StaffMainWidget(QtWidgets.QWidget):
         self.staff_table.insert_rows(objects)
 
     def open_project_invite(self):
-        self.tst_update_data()
-        self.staff_table.enable_filter_list(True)
+#         self.tst_update_data()
+#         self.staff_table.enable_filter_list(True)
 #         self.tst()
-        return
+#         return
         curr_user = self.parent().user
 
         projects = curr_user.projects

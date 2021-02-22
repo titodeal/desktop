@@ -38,7 +38,7 @@ class MainAppWindow(QtWidgets.QWidget):
         self.agreement_widget = AgreementMainWidget(user)
         self.people_widget = people_main_widget.PeopleWidget(user)
         self.staff_widget = StaffMainWidget(self)
-        self.contracts_widget = ContractsMainWidget()
+        self.contracts_widget = ContractsMainWidget(self, user)
 
         # -------------- Signals --------------
 
@@ -60,7 +60,7 @@ class MainAppWindow(QtWidgets.QWidget):
         self.tmp_btn = QtWidgets.QPushButton("RUN")
 #         self.tmp_btn.clicked.connect(self.tmp_click)
         self.lay_main_vert.addWidget(self.tmp_btn)
-        self.lay_main_stacked.setCurrentIndex(2)
+        self.lay_main_stacked.setCurrentIndex(3)
 
     def __get_people_data(self):
         collegues = self.user.get_colleagues()
@@ -98,7 +98,7 @@ def start_main_window():
     user = base_user.BaseUser('AndrIi', server)
 # 
 # #     user.update_user_data()
-#     create_users(server)
+    create_users(server)
 
     w = MainAppWindow(user)
 #-----------------------------------------

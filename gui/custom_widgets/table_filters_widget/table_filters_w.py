@@ -7,16 +7,33 @@ from gui.utils import window_managment
 class TableFilterScrollArea(QtWidgets.QScrollArea):
     def __init__(self, parent=None, objects=[], headers=[], filter_list=True):
         super().__init__(parent)
-        self.table_filters = TableFiltersWidget(self, objects, headers, filter_list)
-        self.table_view = self.table_filters.table_view
-        self.append_rows = self.table_filters.append_rows
-        self.insert_rows = self.table_filters.insert_rows
-        self.setWidget(self.table_filters)
 
-#         print(self.table_filters.sizeHint())
+        self.table = TableFiltersWidget(self, objects, headers, filter_list)
+        self.table_size = self.table.sizeHint()
+
+        self.table_view = self.table.table_view
+        public_methods = ["get_current_index", "get_current_object", "append_rows", "insert_rows",
+                          "set_items_flags", "set_items_checkable",
+                          "enable_filter_list", "enable_hheaders_visible",
+                          "enable_vheaders_visible", "set_first_column_movable",
+                          "set_visible_hheaders", "update_table_data"]
+        for method in public_methods:
+            setattr(self, method, getattr(self.table, method))
+
+        self.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.setWidget(self.table)
+
+    def resizeEvent(self, event):
+        table = self.table
+        self.setWidgetResizable(False)
+        if self.width() > table.sizeHint().width():
+            table.resize(self.width(), table.width())
+        if self.height() > table.sizeHint().height():
+            table.resize(table.width(), self.height())
 
 
-class TableFiltersWidget(QtWidgets.QWidget):
+# class TableFiltersWidget(QtWidgets.QWidget):
+class TableFiltersWidget(QtWidgets.QScrollArea):
     """objects - list of some class objects;
        headers - list of some class objects attributes"""
     def __init__(self, parent=None, objects=[], headers=[], filter_list=True):
@@ -24,6 +41,7 @@ class TableFiltersWidget(QtWidgets.QWidget):
 
         self.resize(200, 100)
         window_managment.adjust_by_screen(self)
+        self.size_hint = self.size()
 
         self.filter_list = filter_list
 
@@ -51,12 +69,23 @@ class TableFiltersWidget(QtWidgets.QWidget):
     def _add_filter_fields(self):
         headers = self.table_view.model.headers
         for idx, header in enumerate(headers):
-            items = self._get_column_data(idx)
+            items = list(set(self._get_column_data(idx)))
+#             items = self._get_column_data(idx)
             self.filters_widget.add_filter_field(items, header)
+
+    def set_items_flags(self, flags):
+        self.table_view.model.set_flags(flags)
+
+    def set_items_checkable(self, _bool):
+        self.table_view.model.set_checkable(_bool)
 
     def get_current_index(self):
         idx = self.table_view.selection_model.currentIndex()
-        print(idx.data())
+        return(idx)
+
+    def get_current_object(self):
+        idx = self.table_view.selection_model.currentIndex()
+        return self.table_view.model.objects[idx.row()]
 
     def insert_rows(self, objects_data, row=0):
         self.table_view.model.insertRows(objects_data, row)
@@ -64,12 +93,6 @@ class TableFiltersWidget(QtWidgets.QWidget):
     def append_rows(self, objects_data):
         row_count = self.table_view.model.rowCount()
         self.table_view.model.insertRows(objects_data, row_count)
-
-    def set_items_flags(self, flags):
-        self.table_view.model.set_flags(flags)
-
-    def set_items_checkable(self, _bool):
-        self.table_view.model.set_checkable(_bool)
 
     def enable_filter_list(self, bool_):
         self.filter_list = bool_
@@ -105,3 +128,7 @@ class TableFiltersWidget(QtWidgets.QWidget):
         for idx, header in enumerate(all_headers):
             items = self._get_column_data(idx)
             self.filters_widget.update_popup_list(header, items)
+
+    def sizeHint(self):
+        return self.size_hint
+
