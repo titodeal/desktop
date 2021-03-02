@@ -58,7 +58,7 @@ class MainAppWindow(QtWidgets.QWidget):
         self.sidebar.raise_()
 
         self.tmp_btn = QtWidgets.QPushButton("RUN")
-#         self.tmp_btn.clicked.connect(self.tmp_click)
+        self.tmp_btn.clicked.connect(self.tmp_click)
         self.lay_main_vert.addWidget(self.tmp_btn)
         self.lay_main_stacked.setCurrentIndex(3)
 
@@ -67,8 +67,13 @@ class MainAppWindow(QtWidgets.QWidget):
         return []
         return collegues
 
-#     def tmp_click(self):
+    #################  TEMP ############################
+    def tmp_click(self):
 #         self.agreements_weedget.update_data()
+        curr_project = self.user.current_project
+        print(curr_project.root)
+
+    ####################################################
 
 
     def resizeEvent(self, size_event):
@@ -98,7 +103,7 @@ def start_main_window():
     user = base_user.BaseUser('AndrIi', server)
 # 
 # #     user.update_user_data()
-    create_users(server)
+#     create_users(server)
 
     w = MainAppWindow(user)
 #-----------------------------------------

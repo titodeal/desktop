@@ -17,6 +17,8 @@ class ProjectViewer(QtWidgets.QWidget):
     def __init__(self, parent=None, projects=[]):
         super().__init__(parent)
 
+        self.projects = projects
+
 #         self.setWindowFlag(QtCore.Qt.Window)
 #         self.setWindowModality(QtCore.Qt.WindowModal)
         self.resize(200, 100)
@@ -30,8 +32,8 @@ class ProjectViewer(QtWidgets.QWidget):
 #         self.lb_header_title = QtWidgets.QLabel("Select a project")
 #         self.btn_newproject = QtWidgets.QPushButton("NEW PROJECT")
 #         self.btn_newproject.clicked.connect(self.get_current_index)
-        headers = ["id", "name", "owner", "status"]
-        self.projects_table = TableFiltersWidget(self, get_projects(), headers)
+        headers = ["id", "name", "root_folder", "root_id", "owner_id", "status"]
+        self.projects_table = TableFiltersWidget(self, self.projects, headers)
 #         self.projects_table = ProjectsTableView(self, projects)
 #         self.filters_widget = FiltersWidget(self)
 #         self.add_filter_fields()
@@ -56,27 +58,27 @@ class ProjectViewer(QtWidgets.QWidget):
         idx = self.projects_table.selection_model.currentIndex()
         print(idx.data())
 
-class Project:
-    def __init__(self, properties):
-        self.id = properties["id"]
-        self.name = properties["name"]
-        self.owner = properties["owner"]
-        self.status = properties["status"]
+# class Project:
+#     def __init__(self, properties):
+#         self.id = properties["id"]
+#         self.name = properties["name"]
+#         self.owner = properties["owner"]
+#         self.status = properties["status"]
 
 
-def get_projects():
-    projects = []
-    for i in range(10):
-        properties = {"id": i,
-                      "name": f"Prj_0{i}",
-                      "owner": f"Owner_0{i}",
-                      "status": "active"}
-        projects.append(Project(properties))
-    return projects
-
-
-if __name__ == "__main__":
-    app = QtWidgets.QApplication()
-    w = ProjectViewer(projects=get_projects())
-    w.show()
-    app.exec_()
+# def get_projects():
+#     projects = []
+#     for i in range(10):
+#         properties = {"id": i,
+#                       "name": f"Prj_0{i}",
+#                       "owner": f"Owner_0{i}",
+#                       "status": "active"}
+#         projects.append(Project(properties))
+#     return projects
+# 
+# 
+# if __name__ == "__main__":
+#     app = QtWidgets.QApplication()
+#     w = ProjectViewer(projects=get_projects())
+#     w.show()
+#     app.exec_()

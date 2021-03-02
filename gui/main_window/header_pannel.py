@@ -1,5 +1,7 @@
 from PySide6 import QtWidgets, QtCore, QtGui
-from gui.project_widgets.dialogs.select_project_dialog import SelectProjectDialog
+from gui.project_widgets.dialogs. \
+         select_project_dialog import SelectProjectDialog
+from gui.settings.settings_main_w import SettingsMainWindow
 
 class HeaderPannel(QtWidgets.QWidget):
     """Description"""
@@ -20,15 +22,20 @@ class HeaderPannel(QtWidgets.QWidget):
         self.btn_sidebar = QtWidgets.QPushButton("+")
         self.btn_account = QtWidgets.QPushButton("Account")
         self.btn_project = QtWidgets.QPushButton("...")
+        self.btn_settings = QtWidgets.QPushButton("$")
+        self.btn_settings.setFixedWidth(20)
 
         self.btn_sidebar.clicked.connect(self.sidebar_OnOff)
         self.btn_project.clicked.connect(self.select_project)
+        self.btn_settings.clicked.connect(self.open_settigs)
 
-        lay_main_hor.addWidget(self.btn_sidebar, 0,
+        lay_main_hor.addWidget(self.btn_sidebar, 1,
                                QtCore.Qt.AlignLeft)
-        lay_main_hor.addWidget(self.btn_project, 0,
+        lay_main_hor.addWidget(self.btn_project, 1,
                                QtCore.Qt.AlignLeft)
 
+        lay_main_hor.addWidget(self.btn_settings, 0,
+                               QtCore.Qt.AlignRight)
         lay_main_hor.addWidget(self.btn_account, 0,
                                QtCore.Qt.AlignRight)
 
@@ -41,7 +48,7 @@ class HeaderPannel(QtWidgets.QWidget):
             self.parent().sidebar.raise_()
 
     def select_project(self):
-        w = SelectProjectDialog(self)
+        w = SelectProjectDialog(self, self.user.projects)
         print("before")
         print(w.size())
         print(w.parent())
@@ -53,3 +60,7 @@ class HeaderPannel(QtWidgets.QWidget):
 #         print(w.pos())
         print(w.isVisible())
         print("after")
+
+    def open_settigs(self):
+        settings_window = SettingsMainWindow(self)
+        settings_window.show()

@@ -13,7 +13,7 @@ class SelectProjectDialog(QtWidgets.QDialog):
         self.lb_header_title = QtWidgets.QLabel("Select a project")
         self.btn_newproject = QtWidgets.QPushButton("NEW PROJECT")
         self.btn_newproject.clicked.connect(self.start_new_project)
-        self.project_viewer = ProjectViewer(self, [])
+        self.project_viewer = ProjectViewer(self, projects)
 
         self.lay_header_hori.addWidget(self.lb_header_title, 0,
                                        QtCore.Qt.AlignLeft)

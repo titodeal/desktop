@@ -41,6 +41,9 @@ class BaseUser:
         self.projects = self.get_user_projects()
         if self.projects:
             self.set_current_project(self.projects[0])
+        else:
+            prj = ProjectModel("0000", "None", "0000", "", "", "")
+            self.set_current_project(prj)
 
     def get_user_projects(self):
         return ProjectModel.get_user_projects(self.get_server(), self.id)

@@ -1,12 +1,15 @@
 from PySide6 import QtWidgets, QtCore
 from gui.utils import window_managment
+from app.models.root.root_model import RootModel
 
 
 class NewProjectDialog(QtWidgets.QDialog):
-    def __init__(self, owner, parent=None):
+    def __init__(self, user, parent=None):
         super().__init__(parent)
 
-        self.owner = owner
+        self.user = user
+        self.server = user.get_server()
+        self.roots = RootModel.get_user_roots(self.server, self.user.id)
 
         self.setWindowFlags(QtCore.Qt.Window)
         self.setWindowModality(QtCore.Qt.NonModal)
@@ -41,20 +44,29 @@ class NewProjectDialog(QtWidgets.QDialog):
                                  "Root=>Episode=>Shot"])
         self.le_fps = QtWidgets.QLineEdit()
 
-        self.le_root_project = QtWidgets.QLineEdit()
+
+#         root_paths = [obj.root_folder for obj in self.roots]
+        self.cb_root_project = QtWidgets.QComboBox(self)
+        for idx, obj in enumerate(self.roots):
+            self.cb_root_project.addItem(obj.root_folder)
+            self.cb_root_project.setItemData(idx, str(obj.id))
+#             print(self.cb_root_project.currentData(QtCore.Qt.UserRole))
+#         self.cb_root_project.addItems(root_paths)
+
+#         self.le_root_project = QtWidgets.QLineEdit()
         self.btn_root_project = QtWidgets.QPushButton("...")
-        self.btn_root_project.setFixedWidth(30)
-        lay_root_project = QtWidgets.QHBoxLayout()
-        lay_root_project.addWidget(self.le_root_project)
-        lay_root_project.addWidget(self.btn_root_project)
-        lay_root_project.setContentsMargins(QtCore.QMargins(0, 0, 0, 0))
-        lay_root_project.setSpacing(0)
-        self.btn_root_project.clicked.connect(self.select_root_project)
+#         self.btn_root_project.setFixedWidth(30)
+#         lay_root_project = QtWidgets.QHBoxLayout()
+#         lay_root_project.addWidget(self.le_root_project)
+#         lay_root_project.addWidget(self.btn_root_project)
+#         lay_root_project.setContentsMargins(QtCore.QMargins(0, 0, 0, 0))
+#         lay_root_project.setSpacing(0)
+#         self.btn_root_project.clicked.connect(self.select_root_project)
 
         lay_middle_form.addRow("Name:", self.le_name)
         lay_middle_form.addRow("Scheme:", self.cb_scheme)
         lay_middle_form.addRow("FPS:", self.le_fps)
-        lay_middle_form.addRow("Root project:", lay_root_project)
+        lay_middle_form.addRow("Root project:", self.cb_root_project)
 
         return lay_middle_form
 
@@ -89,11 +101,16 @@ class NewProjectDialog(QtWidgets.QDialog):
         else:
             scheme = "SE"
 
+        root_id = self.cb_root_project.currentData(QtCore.Qt.UserRole)
+#         root_folder = self.cb_root_project.currentData(QtCore.Qt.UserRole)
         args = {"project_name": self.le_name.text(),
-                "owner_id": self.owner.id,
-                "root": self.le_root_project.text(),
+                "owner_id": self.user.id,
+                "root_id": self.cb_root_project.currentData(role=QtCore.Qt.UserRole),
                 "scheme": scheme,
                 "fps": self.le_fps.text(),
                 "status": "new"}
 
-        self.owner.get_server().create_project(**args)
+        print(self.cb_root_project.currentData())
+        print("ARGS ===================", args)
+
+        self.server.create_project(**args)

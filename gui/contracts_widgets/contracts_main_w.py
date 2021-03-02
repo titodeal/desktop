@@ -37,10 +37,12 @@ class ContractsMainWidget(QtWidgets.QSplitter):
     def _setup_table(self):
         contracts = ContractModel.get_user_contracts(self.server, self.user.id)
         self.table = ContractsTableWidget(self, contracts)
-        self.table.table_view.setItemDelegateForColumn(0, FirstRowDelegate(self.table.table_view))
+        self.table.set_first_row_new()
+#         self.table.table_view.setItemDelegateForColumn(0, FirstRowDelegate(self.table.table_view))
+# 
+#         self.table.insert_rows([FirstRow(self.table.headers)], 0)
+#         self.table.table_view.setSpan(0, 0, 1, 4)
 
-        self.table.insert_rows([FirstRow(self.table.headers)], 0)
-        self.table.table_view.setSpan(0, 0, 1, 4)
 #         self.table.append_rows([FirstRow(self.table.headers)])
 #         self.table.append_rows([FirstRow(self.table.headers)])
 #         self.table.set_items_flags(QtCore.Qt.ItemIsEnabled \

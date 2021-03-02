@@ -1,11 +1,12 @@
 
 
 class ProjectModel:
-    def __init__(self, _id, name, owner_id, root, fps, status):
+    def __init__(self, _id, name, owner_id, root_id, root_folder, fps, status):
         self.id = _id
         self.name = name
         self.owner_id = owner_id
-        self.root = root
+        self.root_id = root_id
+        self.root_folder = root_folder
         self.fps = fps
         self.status = status
 
@@ -20,7 +21,8 @@ class ProjectModel:
             project = ProjectModel(prj["project_id"],
                                    prj["name"],
                                    prj["owner_id"],
-                                   prj["path"],
+                                   prj["root_id"],
+                                   prj["root_folder"],
                                    prj["fps"],
                                    prj["status"])
             projects.append(project)

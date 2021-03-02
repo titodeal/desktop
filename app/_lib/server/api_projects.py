@@ -1,11 +1,11 @@
 
 class ApiProjects:
-    def create_project(self, project_name, owner_id, root,
+    def create_project(self, project_name, owner_id, root_id,
                        scheme, fps, status):
         method_name = "create_project"
         args = [f"{project_name}",
                 f"{owner_id}",
-                f"{root}",
+                f"{root_id}",
                 f"{scheme}",
                 f"{fps}",
                 f"{status}"]

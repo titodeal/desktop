@@ -41,3 +41,15 @@ class ApiUsers:
         args = [f"{user_id}"]
         response = self.send_request(method_name, args)
         return response
+
+    def create_user_root(self, user_id, root_folder, sharing=False):
+        method_name = "create_user_root"
+        args = [f"{user_id}", f"{root_folder}", f"{sharing}"]
+        response = self.send_request(method_name, args)
+        return response
+
+    def get_user_roots(self, user_id):
+        method_name = "get_user_roots"
+        args = [f"{user_id}"]
+        response = self.send_request(method_name, args)
+        return response
