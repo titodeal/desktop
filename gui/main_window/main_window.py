@@ -14,6 +14,11 @@ from gui.contracts_widgets.contracts_main_w import ContractsMainWidget
 from .header_pannel import HeaderPannel
 from .sidebar import SideBar
 
+import config as conf
+
+TITOD_HOST = conf.HOST
+TITOD_PORT = conf.PORT
+
 
 class MainAppWindow(QtWidgets.QWidget):
     def __init__(self, user):
@@ -69,9 +74,13 @@ class MainAppWindow(QtWidgets.QWidget):
 
     #################  TEMP ############################
     def tmp_click(self):
+        from app.models.settings.settings_model import SettingsModel
+        settings = SettingsModel()
+        print("====== READ SHAREVALUE =========", settings.value("share/8").storage_ip)
+        print(settings.contains("share/8"))
 #         self.agreements_weedget.update_data()
-        curr_project = self.user.current_project
-        print(curr_project.root)
+#         curr_project = self.user.current_project
+#         print(curr_project.root)
 
     ####################################################
 
@@ -98,7 +107,7 @@ def start_main_window():
 #-----------------------------------------
     from app._lib.server import api
     from app.models.user import base_user
-    server = api.Api('192.168.88.163', 9090)
+    server = api.Api(TITOD_HOST, TITOD_PORT)
     server.get_credentials('AndrIi', '123')
     user = base_user.BaseUser('AndrIi', server)
 # 
