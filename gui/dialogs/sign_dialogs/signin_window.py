@@ -8,7 +8,7 @@ from .signup_window import SignupDialog
 
 import config
 
-from app.models.user import base_user
+from app.models.user.user import User
 
 HOST = config.HOST
 PORT = config.PORT
@@ -130,7 +130,6 @@ class SignInDialog(QtWidgets.QDialog):
             return None
 
     def connect_to_server(self):
-
         server = self._get_server()
         if not server:
             self.msgfield_lb.setText("Error connecting to server.")
@@ -151,10 +150,8 @@ class SignInDialog(QtWidgets.QDialog):
         response = server.get_credentials(login, passwd)
 
         if response[0] is True:
-#             base_user.MainUser.server = server
-#             self.user = base_user.MainUser(server, login)
-            self.user = base_user.BaseUser(login, server)
-#             self.user.update_user_data()
+            self.user = User.init_user(server)
+            self.user.set_current_project()
             self.accept()
         else:
             self.msgfield_lb.setText(response[1])
@@ -167,18 +164,18 @@ class SignInDialog(QtWidgets.QDialog):
 
 
 
-if __name__ == "__main__":
-    app = QtWidgets.QApplication(sys.argv)
-
-    signin_dialog = SignInDialog()
-#     result = signin_dialog.exec()
-#     print(result)
-#     print(signin_dialog.get_data())
-
-    signin_dialog.show()
-#     sign_core = SigninCoreWidget()
-#     sign_core.show()
-#     le = QtWidgets.QLineEdit()
-#     wl = line_edit_label("test text", le)
-#     wl.show()
-    sys.exit(app.exec_())
+# if __name__ == "__main__":
+#     app = QtWidgets.QApplication(sys.argv)
+# 
+#     signin_dialog = SignInDialog()
+# #     result = signin_dialog.exec()
+# #     print(result)
+# #     print(signin_dialog.get_data())
+# 
+#     signin_dialog.show()
+# #     sign_core = SigninCoreWidget()
+# #     sign_core.show()
+# #     le = QtWidgets.QLineEdit()
+# #     wl = line_edit_label("test text", le)
+# #     wl.show()
+#     sys.exit(app.exec_())

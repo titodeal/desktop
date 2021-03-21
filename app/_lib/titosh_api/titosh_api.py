@@ -15,30 +15,42 @@ class TiToshClient(SocketClient):
         self.send_data(message)
         response = self.recv_messages()
         print(f"=> Method process: '{method_name}' => Response is {response}")
-        return response
+        return self.__handle_response(response)
+
+    def __handle_response(self, response):
+        print("=============RESPONSE IS: ", response)
+        returncode = response['returncode']
+        msg = response['msg']
+        if returncode != 0:
+            return False, msg
+        else:
+            return True, msg
+
 
 def mount_fs(host, port, user, passwd, root_folder):
-    conn = TiToshClient(host, port)
-    conn.set_connection()
+    api = TiToshClient(host, port)
+    api.set_connection()
     method_name = "get_credentials"
     args = [f"{user}", f"{passwd}"]
-    conn._send_request(method_name, args)
+    api._send_request(method_name, args)
 
     method_name = "mount_fs"
     args = [f"{root_folder}", f"{user}", f"{passwd}"]
-    conn._send_request(method_name, args)
-    conn.close_connection()
+    response = api._send_request(method_name, args)
+    api.close_connection()
+    return response
+
 
 def check_storage_folder(host, port, user, passwd, root_folder):
-    conn = TiToshClient(host, port)
-    conn.set_connection()
+    api = TiToshClient(host, port)
+    api.set_connection()
     method_name = "get_credentials"
     args = [f"{user}", f"{passwd}"]
-    conn._send_request(method_name, args)
+    api._send_request(method_name, args)
 
     method_name = "check_storage_folder"
     args = [f"{root_folder}", f"{user}"]
-    response = conn._send_request(method_name, args)
-    conn.close_connection()
+    response = api._send_request(method_name, args)
+    api.close_connection()
     return response
 

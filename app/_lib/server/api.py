@@ -13,18 +13,23 @@ class Api(SocketClient, ApiUsers, ApiProjects):
 
     def __init__(self, host, port, timeout=None):
         super(Api, self).__init__(host=host, port=port, timeout=timeout)
+        self.credential_user = None
         self.set_connection()
 
     def create_credentials(self, login, passwd, email):
         method_name = "create_credentials"
         args = [f"{login}", f"{passwd}", f"{email}"]
         response = self.send_request(method_name, args)
+        if response[0]:
+            self.credential_user = login
         return response
 
     def get_credentials(self, login, passwd):
         method_name = "get_credentials"
         args = [f"{login}", f"{passwd}"]
         response = self.send_request(method_name, args)
+        if response[0]:
+            self.credential_user = login
         return response
 
     def send_request(self, method_name, args):

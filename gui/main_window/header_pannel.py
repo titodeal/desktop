@@ -7,6 +7,7 @@ class HeaderPannel(QtWidgets.QWidget):
     """Description"""
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.user = self.parent().user
 
         # Palette
         pal = self.palette()
@@ -15,13 +16,12 @@ class HeaderPannel(QtWidgets.QWidget):
         self.setPalette(pal)
         self.setAutoFillBackground(True)
         # ---------------
-        self.user = self.parent().user
 
         lay_main_hor = QtWidgets.QHBoxLayout(self)
 
         self.btn_sidebar = QtWidgets.QPushButton("+")
         self.btn_account = QtWidgets.QPushButton("Account")
-        self.btn_project = QtWidgets.QPushButton("...")
+        self.btn_project = QtWidgets.QPushButton(f"{self.user.current_project.name}")
         self.btn_settings = QtWidgets.QPushButton("$")
         self.btn_settings.setFixedWidth(20)
 
@@ -48,18 +48,15 @@ class HeaderPannel(QtWidgets.QWidget):
             self.parent().sidebar.raise_()
 
     def select_project(self):
-        w = SelectProjectDialog(self, self.user.projects)
-        print("before")
-        print(w.size())
-        print(w.parent())
-#         w.setWindowModality(QtCore.Qt.ApplicationModal)
-        w.exec_()
-#         w.raise_()
-#         w.activateWindow()
-#         print(w.sizeHint())
-#         print(w.pos())
-        print(w.isVisible())
-        print("after")
+        projects = self.user.get_user_projects()
+        w = SelectProjectDialog(self, projects)
+        result = w.exec_()
+        if result == w.Accepted:
+            self.btn_project.setText(w.slct_project.name)
+            self.user.set_current_project(w.slct_project)
+            print("YES")
+        if result == w.Rejected:
+            print("No")
 
     def open_settigs(self):
         settings_window = SettingsMainWindow(self)

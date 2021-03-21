@@ -17,6 +17,7 @@ class TableFilterScrollArea(QtWidgets.QScrollArea):
                           "set_first_row_new",
                           "append_rows", "insert_rows",
                           "set_items_flags", "set_items_checkable",
+                          "get_checked_object",
                           "enable_filter_list", "enable_hheaders_visible",
                           "enable_vheaders_visible", "set_first_column_movable",
                           "set_visible_hheaders", "update_table_data"]
@@ -94,13 +95,23 @@ class TableFiltersWidget(QtWidgets.QWidget):
     def set_items_checkable(self, _bool):
         self.table_view.model.set_checkable(_bool)
 
+    def get_checked_object(self):
+        checked_row = self.table_view.model.checked_row
+#         if idx.isValid():
+        return self.table_view.model.objects[checked_row]
+#         else:
+#             return None
+
     def get_current_index(self):
         idx = self.table_view.selection_model.currentIndex()
         return(idx)
 
     def get_current_object(self):
         idx = self.table_view.selection_model.currentIndex()
-        return self.table_view.model.objects[idx.row()]
+        if idx.isValid():
+            return self.table_view.model.objects[idx.row()]
+        else:
+            return None
 
     def insert_rows(self, objects_data, row=0):
         self.table_view.model.insertRows(objects_data, row)

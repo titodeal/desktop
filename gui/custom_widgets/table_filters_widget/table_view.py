@@ -33,7 +33,7 @@ class TableView(QtWidgets.QTableView):
         self.hscroll.setVisible(False)
 
 #         # ---------- Signals --------------------
-#         self.clicked.connect(self.current_selection_changed)
+        self.clicked.connect(self.current_selection_changed)
 
     def _set_selection_model(self):
         """ Setup for selection model """
@@ -82,9 +82,9 @@ class TableView(QtWidgets.QTableView):
             self.hheader.hideSection(header_idx)
             self.parent().filters_widget.hide_filter(act.text())
 
-#     def current_selection_changed(self, index):
-#         self.model.check_item(index)
-#         print(index.data())
+    def current_selection_changed(self, index):
+        if self.model.checkable:
+            self.model.check_item(index)
 
     def get_all_column_data(self, column, role=QtCore.Qt.DisplayRole):
         data = []

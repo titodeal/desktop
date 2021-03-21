@@ -53,3 +53,9 @@ class ApiUsers:
         args = [f"{user_id}"]
         response = self.send_request(method_name, args)
         return response
+
+#     def del_user_root(self, root_id):
+#         method_name = "del_user_root"
+#         args = [f"{root_id}"]
+#         response = self.send_request(method_name, args)
+#         return response

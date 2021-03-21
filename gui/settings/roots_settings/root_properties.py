@@ -1,5 +1,6 @@
 from PySide6 import QtWidgets, QtCore
 from app.models.share.share_model import ShareModel
+from app.models.root.root_model import RootModel
 from app.models.settings.settings_model import SettingsModel
 
 import os
@@ -15,6 +16,8 @@ class RootProperties(QtWidgets.QDialog):
         self.root_obj = root_obj
         self.user = user
         self.server = user.get_server()
+        self.root_obj = root_obj
+        self.new_root_obj = True if root_obj is None else False
 
         self.setWindowTitle("Root properties")
         self.setWindowFlag(QtCore.Qt.Window)
@@ -85,11 +88,11 @@ class RootProperties(QtWidgets.QDialog):
         lay_middle_form.addRow(self.btn_test)
 
         #-----------------TEST SHARING FIELDS ------------
-        self.le_share_folder = QtWidgets.QLineEdit()
-        self.btn_share_folder = QtWidgets.QPushButton('Share')
-        self.btn_share_folder.clicked.connect(self.test_share_folder)
-        lay_middle_form.addRow("Share Folder", self.le_share_folder)
-        lay_middle_form.addRow("Share Button", self.btn_share_folder)
+#         self.le_share_folder = QtWidgets.QLineEdit()
+#         self.btn_share_folder = QtWidgets.QPushButton('Share')
+#         self.btn_share_folder.clicked.connect(self.test_share_folder)
+#         lay_middle_form.addRow("Share Folder", self.le_share_folder)
+#         lay_middle_form.addRow("Share Button", self.btn_share_folder)
 
         self.group_box_w.hide()
         return self.group_box_w
@@ -154,8 +157,8 @@ class RootProperties(QtWidgets.QDialog):
         response = titosh_api.mount_fs(host, port, user, passwd, root_folder )
         print("RESPONSE = ", response)
 
-#     def test_sharing_data(sefl):
-    def test_share_folder(self):
+#     def test_share_folder(self):
+    def sharing_data_correctly(self):
         lay_share_data = self.group_box_w.layout()
         fields_count = lay_share_data.count()
         all_filled = True
@@ -205,9 +208,9 @@ class RootProperties(QtWidgets.QDialog):
                                                    user,
                                                    passwd,
                                                    root_folder)
-        if not status:
+        if status is False:
             print(msg)
-            return
+            return False
 
         return True
 
@@ -228,57 +231,64 @@ class RootProperties(QtWidgets.QDialog):
 #         response = titosh_api.share_folder(host, port, user, passwd, root_folder )
 #         print("RESPONSE = ", response)
 
-    def save_data(self):
-        isshare = self.chbx_sharing.checkState()
-        sharing = True if isshare == QtCore.Qt.Checked else False
-
-        if sharing:
-            if not self.test_share_folder():
-                return
-
-        if not self.root_obj:
-            root_folder = self.le_root_folder.text()
-            status, data = self.server.create_user_root(self.user.id, root_folder, sharing)
-            if not status:
-                print(data)
-                return
-            root_id = int(data[0]['root_id'])
-
+    def save_data_nosharing(self):
+        status, data = self.server.create_user_root(self.user.id,
+                                                    self.le_root_folder.text(),
+                                                    sharing=False)
+        if status is False:
+            print("Save data failed: ", data)
+            return
         else:
-            root_id = self.root_obj.root_id
-            if sharing is not self.root_obj.sharing:
-                self.server.update_root_sharing(user_id, sharing)
+            print("Save data successfull: ", data)
 
-#         print(root_response)
-#         return
+    def save_data_sharing(self):
+        if not self.sharing_data_correctly():
+            return
 
-            share = ShareModel(root_id,
-                               self.le_host,
-                               self.le_host_root,
-                               self.le_user,
-                               self.le_passwd)
+        # Creating new root object in database.
+        if self.new_root_obj:
+            status, data = self.server.create_user_root(
+                                self.user.id,
+                                self.le_root_folder.text(),
+                                sharing=True
+                                )
+            if status is False:
+                print("Save data failed: ", data)
+                return
+            else:
+                root_id = data[0]['root_id']
 
-            settings = SettingsModel()
-            settings.setValue("share/" f"{root_id}", share)
+        # In case the sharing option has changed it
+        # updates the existing root object in database.
+        else:
+            root_id = self.root_obj.id
+            if self.root_obj.sharing is False:
+                self.server.update_root(root_id, sharing=True)
 
-            print("SHAREVALUE =========", settings.value(f"share/{root_id}").storage_ip)
-            print(settings.organizationName())
-            print(settings.applicationName())
-            print(settings.scope())
-            print(settings.format())
-            print(settings.fileName())
-            settings.sync()
-# 
-# 
-#         if not self.root_obj:
-#             root_folder = self.le_root_folder.text()
-#             self.server.create_user_root(self.user.id, root_folder, sharing)
-#         else:
-#             if sharing is not self.root_obj.sharing:
-#                 self.server.update_root_sharing(user_id, sharing)
-# 
-# 
-#         print("Savoing Data")
+        status, data = titosh_api.mount_fs(
+                                           self.le_host.text(),
+                                           int(self.le_port.text()),
+                                           self.le_user.text(),
+                                           self.le_passwd.text(),
+                                           self.le_host_root.text()
+                                          )
+        if status is False:
+            print("Save data failed: ", data)
+            return
 
-#     def select_root_folder(self):
-#         print("OPEN BROWSE DIALOG")
+        # Saving share object.
+        share_obj = ShareModel(root_id,
+                               self.le_host.text(),
+                               self.le_host_root.text(),
+                               self.le_user.text(),
+                               self.le_passwd.text())
+
+        settings = SettingsModel()
+        settings.setValue(f"share/{root_id}", share_obj)
+        settings.sync()
+
+    def save_data(self):
+        if self.chbx_sharing.checkState() == QtCore.Qt.Checked:
+            self.save_data_sharing()
+        else:
+            self.save_data_nosharing()

@@ -20,3 +20,10 @@ class ApiProjects:
         response = self.send_request(method_name, args)
         return response
 
+    def replace_project_root(self, project_id, old_root_id, new_root_id):
+        method_name = "replace_project_root"
+        args = [f"{project_id}", f"{old_root_id}", f"{new_root_id}"]
+
+        response = self.send_request(method_name, args)
+        return response
+
